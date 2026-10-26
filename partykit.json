@@ -1,0 +1,10 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "room-split-game",
+  "main": "party/server.ts",
+  "compatibilityDate": "2024-10-01",
+  "serve": {
+    "path": "dist",
+    "singlePageApp": true
+  }
+}

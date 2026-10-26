@@ -1,0 +1,35 @@
+{
+  "name": "room-split-game",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Split the Room — Online social deduction & persuasion browser game powered by PartyKit and React",
+  "scripts": {
+    "dev": "concurrently -n \"PARTY,VITE\" -c \"magenta,cyan\" \"npx partykit dev --port 1999\" \"vite --port 5173\"",
+    "dev:party": "npx partykit dev --port 1999",
+    "dev:web": "vite --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "deploy": "npm run build && npx partykit deploy",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lucide-react": "^0.454.0",
+    "partysocket": "^1.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.0.1",
+    "partykit": "^0.0.112",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.4"
+  }
+}
