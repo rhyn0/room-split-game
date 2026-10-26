@@ -6,7 +6,7 @@ import {
   getRoleDefinition,
 } from './roles';
 import { calculateRoundSummary } from './scoring';
-import {
+import type {
   ActivePowerType,
   ChoiceOption,
   ClientPlayerView,
@@ -197,7 +197,9 @@ export class RoomGameEngine {
       // Ensure at least one human is host
       const anyHost = this.players.some((p) => p.isHost && p.isConnected);
       if (!anyHost && !existing.isBot) {
-        this.players.forEach((p) => (p.isHost = false));
+        for (const p of this.players) {
+          p.isHost = false;
+        }
         existing.isHost = true;
       }
       this.callbacks.onBroadcastState();
@@ -240,10 +242,7 @@ export class RoomGameEngine {
     this.callbacks.onBroadcastState();
   }
 
-  private handleUpdateSettings(
-    playerId: string,
-    partial: Partial<RoomSettings>
-  ): void {
+  private handleUpdateSettings(playerId: string, partial: Partial<RoomSettings>): void {
     const player = this.players.find((p) => p.id === playerId);
     if (!player?.isHost) {
       this.callbacks.onSendError?.(playerId, 'Only the Room Host can change settings.');
@@ -365,7 +364,8 @@ export class RoomGameEngine {
 
   private startRound(roundNum: number): void {
     this.currentRound = roundNum;
-    this.judgeId = this.judgeRotationOrder[roundNum - 1] ?? this.getActivePlayers()[0].id;
+    this.judgeId =
+      this.judgeRotationOrder[roundNum - 1] ?? this.getActivePlayers()[0].id;
     this.prompt = null;
     this.initialChoices = {};
     this.playerKnownChoices = {};
@@ -597,9 +597,7 @@ export class RoomGameEngine {
     this.callbacks.onBroadcastState();
   }
 
-  private addStatementCard(
-    cardData: Omit<StatementCard, 'id' | 'createdAt'>
-  ): void {
+  private addStatementCard(cardData: Omit<StatementCard, 'id' | 'createdAt'>): void {
     this.statements.push({
       ...cardData,
       id: `stmt_${Date.now()}_${this.statements.length}_${Math.floor(this.rng() * 1000)}`,
@@ -849,10 +847,7 @@ export class RoomGameEngine {
   }
 
   private handleSubmitJudgeVerdict(playerId: string, choice: ChoiceOption): void {
-    if (
-      this.phase !== 'PHASE3_PERSUASION' &&
-      this.phase !== 'PHASE4_JUDGE_DECISION'
-    ) {
+    if (this.phase !== 'PHASE3_PERSUASION' && this.phase !== 'PHASE4_JUDGE_DECISION') {
       return;
     }
     if (playerId !== this.judgeId) {
@@ -956,8 +951,7 @@ export class RoomGameEngine {
    */
   public getStateForPlayer(viewerId: string): ClientRoomState {
     const isRevealOrPost =
-      this.phase === 'PHASE5_REVEAL_AND_SCORE' ||
-      this.phase === 'POST_GAME_SUMMARY';
+      this.phase === 'PHASE5_REVEAL_AND_SCORE' || this.phase === 'POST_GAME_SUMMARY';
     const isFogOfWar =
       this.settings.voteRevealMode === 'fog_of_war' &&
       this.phase !== 'POST_GAME_SUMMARY';
@@ -1064,14 +1058,12 @@ export class RoomGameEngine {
         ? { ...this.roleAssignments[viewerId] }
         : null,
       myLockedChoice:
-        this.phase === 'PHASE5_REVEAL_AND_SCORE' ||
-        this.phase === 'POST_GAME_SUMMARY'
+        this.phase === 'PHASE5_REVEAL_AND_SCORE' || this.phase === 'POST_GAME_SUMMARY'
           ? (this.finalChoices[viewerId] ?? null)
           : (this.playerKnownChoices[viewerId] ?? null),
       myInitialChoice: this.initialChoices[viewerId] ?? null,
       currentRoundSummary: filteredSummary,
-      matchHistory:
-        this.phase === 'POST_GAME_SUMMARY' ? this.matchHistory : [],
+      matchHistory: this.phase === 'POST_GAME_SUMMARY' ? this.matchHistory : [],
     };
   }
 }

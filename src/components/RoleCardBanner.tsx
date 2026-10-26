@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
 import { Eye, EyeOff, ShieldAlert, Sparkles, UserCheck, Zap } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { getRoleDefinition } from '../../shared/roles';
-import { ChoiceOption, PlayerRoleAssignment } from '../../shared/types';
+import type { ChoiceOption, PlayerRoleAssignment } from '../../shared/types';
 
 interface RoleCardBannerProps {
   assignment: PlayerRoleAssignment;
@@ -33,19 +34,13 @@ export const RoleCardBanner: React.FC<RoleCardBannerProps> = ({
               </>
             )}
           </span>
-          <h3 className="role-name">
-            {isConcealed ? '•••••• ••••••' : roleDef.name}
-          </h3>
-          {!isConcealed && (
-            <span className="role-tagline">— {roleDef.tagline}</span>
-          )}
+          <h3 className="role-name">{isConcealed ? '•••••• ••••••' : roleDef.name}</h3>
+          {!isConcealed && <span className="role-tagline">— {roleDef.tagline}</span>}
         </div>
 
         <div className="role-banner-actions">
           {myLockedChoice && !isConcealed && (
-            <span
-              className={`locked-pill locked-pill-${myLockedChoice.toLowerCase()}`}
-            >
+            <span className={`locked-pill locked-pill-${myLockedChoice.toLowerCase()}`}>
               Your Vote: Option {myLockedChoice}
             </span>
           )}
@@ -75,25 +70,22 @@ export const RoleCardBanner: React.FC<RoleCardBannerProps> = ({
             {roleDef.objectiveDescription}
           </div>
 
-          {assignment.roleId === 'accomplice' &&
-            assignment.accompliceTargetName && (
-              <div className="role-callout role-callout-partner">
-                <UserCheck size={16} />
-                <span>
-                  Your Secret Partner is{' '}
-                  <strong>{assignment.accompliceTargetName}</strong>! Try to
-                  lock in the exact same option as them.
-                </span>
-              </div>
-            )}
+          {assignment.roleId === 'accomplice' && assignment.accompliceTargetName && (
+            <div className="role-callout role-callout-partner">
+              <UserCheck size={16} />
+              <span>
+                Your Secret Partner is{' '}
+                <strong>{assignment.accompliceTargetName}</strong>! Try to lock in the
+                exact same option as them.
+              </span>
+            </div>
+          )}
 
           {roleDef.activePower && (
             <div className="role-callout role-callout-power">
               <Zap size={16} />
               <div>
-                <strong>
-                  Active Power ({roleDef.activePower.name}):
-                </strong>{' '}
+                <strong>Active Power ({roleDef.activePower.name}):</strong>{' '}
                 {roleDef.activePower.description}{' '}
                 <span className="power-status-chip">
                   {assignment.hasUsedPower ? 'USED THIS ROUND' : 'READY IN PERSUASION'}
@@ -106,9 +98,8 @@ export const RoleCardBanner: React.FC<RoleCardBannerProps> = ({
             <div className="role-callout role-callout-intel">
               <ShieldAlert size={16} />
               <span>
-                <strong>Wiretap Intel:</strong> {assignment.powerTargetName}{' '}
-                currently has{' '}
-                <strong>Option {assignment.peekedChoice}</strong> locked in!
+                <strong>Wiretap Intel:</strong> {assignment.powerTargetName} currently
+                has <strong>Option {assignment.peekedChoice}</strong> locked in!
               </span>
             </div>
           )}

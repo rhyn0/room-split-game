@@ -1,4 +1,4 @@
-import {
+import type {
   ChoiceOption,
   PlayerRoleAssignment,
   QuestionPrompt,
@@ -64,7 +64,8 @@ export const ROLES_CATALOG: Record<RoleId, RoleDefinition> = {
     activePower: {
       type: 'PEEK',
       name: 'Wiretap Peek',
-      description: 'Secretly view which option (A or B) one target player currently has locked in.',
+      description:
+        'Secretly view which option (A or B) one target player currently has locked in.',
     },
   },
   forger: {
@@ -134,9 +135,7 @@ export function dealRolesForRound(
 
   // If fewer than 2 voters exist, filter out 'accomplice' since Accomplice needs a partner
   const usablePool =
-    voterPlayers.length < 2
-      ? poolBase.filter((r) => r !== 'accomplice')
-      : poolBase;
+    voterPlayers.length < 2 ? poolBase.filter((r) => r !== 'accomplice') : poolBase;
 
   const finalPoolBase = usablePool.length > 0 ? usablePool : ['lone_wolf' as RoleId];
 
@@ -179,7 +178,8 @@ export function dealRolesForRound(
  */
 export const BOT_SAMPLE_PROMPTS: QuestionPrompt[] = [
   {
-    question: 'You find a suitcase with $100,000 cash in an alley. What do you actually do?',
+    question:
+      'You find a suitcase with $100,000 cash in an alley. What do you actually do?',
     optionA: 'Keep it quietly and tell nobody',
     optionB: 'Turn it in to the police station',
   },
@@ -189,7 +189,8 @@ export const BOT_SAMPLE_PROMPTS: QuestionPrompt[] = [
     optionB: 'Cheese & dairy',
   },
   {
-    question: 'In a zombie apocalypse, what is your survival strategy in the first 24 hours?',
+    question:
+      'In a zombie apocalypse, what is your survival strategy in the first 24 hours?',
     optionA: 'Fortify my current home and lay low',
     optionB: 'Hit the highway immediately for the mountains',
   },

@@ -35,7 +35,7 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-deep);
   background-image:
     radial-gradient(circle at 12% 15%, rgba(99, 102, 241, 0.16), transparent 36%),
@@ -88,7 +88,7 @@ body {
 
 .brand-title {
   display: block;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: 0.04em;
@@ -297,7 +297,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
 }
@@ -346,7 +346,7 @@ body {
 }
 
 .hero-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: clamp(2.1rem, 4.5vw, 3.2rem);
   font-weight: 800;
   line-height: 1.12;
@@ -377,7 +377,7 @@ body {
   .persuasion-layout,
   .choice-cards-grid,
   .options-split-inputs {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -415,7 +415,7 @@ body {
 
 .code-input {
   text-transform: uppercase;
-  font-family: 'Space Grotesk', monospace;
+  font-family: "Space Grotesk", monospace;
   font-weight: 800;
   letter-spacing: 0.18em;
   font-size: 1.15rem;
@@ -605,7 +605,7 @@ button:disabled {
 }
 
 .room-code-display {
-  font-family: 'Space Grotesk', monospace;
+  font-family: "Space Grotesk", monospace;
   font-size: 3rem;
   font-weight: 800;
   letter-spacing: 0.22em;
@@ -934,7 +934,7 @@ button:disabled {
 }
 
 .role-name {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.2rem;
   font-weight: 800;
 }
@@ -1024,7 +1024,7 @@ button:disabled {
 }
 
 .phase-headline {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.65rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
@@ -1077,7 +1077,7 @@ button:disabled {
 }
 
 .question-text {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: clamp(1.35rem, 2.6vw, 1.95rem);
   font-weight: 800;
   margin: 0.45rem 0 1.4rem;
@@ -1398,7 +1398,7 @@ button:disabled {
 }
 
 .reveal-headline {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: clamp(1.6rem, 3vw, 2.2rem);
   font-weight: 800;
   margin: 0.35rem 0;
@@ -1652,7 +1652,7 @@ button:disabled {
 }
 
 .round-pts-badge {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.05rem;
   font-weight: 800;
   color: #34d399;
@@ -1682,7 +1682,7 @@ button:disabled {
 }
 
 .postgame-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 2.2rem;
   font-weight: 800;
   margin: 0.25rem 0 0.5rem;
@@ -1745,14 +1745,14 @@ button:disabled {
 }
 
 .rank-number {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 800;
   color: #94a3b8;
   width: 28px;
 }
 
 .leaderboard-score {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 800;
   font-size: 1.1rem;
   color: #fbbf24;

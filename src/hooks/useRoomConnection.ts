@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import PartySocket from 'partysocket';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { RoomGameEngine } from '../../shared/engine';
-import {
+import type {
   ClientRoomState,
   ClientToServerMessage,
   ServerToClientMessage,
@@ -58,9 +58,7 @@ export function useRoomConnection() {
   });
 
   const [playerName, setPlayerName] = useState<string>(() => getStoredPlayerName());
-  const [playerId, setPlayerId] = useState<string>(() =>
-    getOrCreateSessionPlayerId()
-  );
+  const [playerId, setPlayerId] = useState<string>(() => getOrCreateSessionPlayerId());
   const [isSandboxMode, setIsSandboxMode] = useState<boolean>(false);
   const [connectionStatus, setConnectionStatus] = useState<
     'disconnected' | 'connecting' | 'connected'
@@ -73,10 +71,7 @@ export function useRoomConnection() {
   const activeSandboxViewerRef = useRef<string>(playerId);
 
   const pushToast = useCallback(
-    (
-      message: string,
-      variant: 'info' | 'success' | 'warning' | 'error' = 'info'
-    ) => {
+    (message: string, variant: 'info' | 'success' | 'warning' | 'error' = 'info') => {
       const id = `toast_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       setToasts((prev) => [...prev, { id, message, variant }]);
       setTimeout(() => {
@@ -198,10 +193,7 @@ export function useRoomConnection() {
   const sendMessage = useCallback(
     (msg: ClientToServerMessage) => {
       if (isSandboxMode && sandboxEngineRef.current) {
-        sandboxEngineRef.current.handleMessage(
-          activeSandboxViewerRef.current,
-          msg
-        );
+        sandboxEngineRef.current.handleMessage(activeSandboxViewerRef.current, msg);
         return;
       }
       if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {

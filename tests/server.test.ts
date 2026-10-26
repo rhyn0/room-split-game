@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
 import type * as Party from 'partykit/server';
+import { describe, expect, it } from 'vitest';
 import SplitTheRoomServer from '../party/server';
-import { ServerToClientMessage } from '../shared/types';
+import type { ServerToClientMessage } from '../shared/types';
 
 class MockConnection {
   public id: string;
@@ -44,15 +44,21 @@ describe('PartyKit SplitTheRoomServer WebSocket Handler', () => {
 
     server.onConnect(
       conn1 as unknown as Party.Connection,
-      { request: { url: 'http://localhost:1999/party/ABCD?playerId=p1' } } as Party.ConnectionContext
+      {
+        request: { url: 'http://localhost:1999/party/ABCD?playerId=p1' },
+      } as Party.ConnectionContext
     );
     server.onConnect(
       conn2 as unknown as Party.Connection,
-      { request: { url: 'http://localhost:1999/party/ABCD?playerId=p2' } } as Party.ConnectionContext
+      {
+        request: { url: 'http://localhost:1999/party/ABCD?playerId=p2' },
+      } as Party.ConnectionContext
     );
     server.onConnect(
       conn3 as unknown as Party.Connection,
-      { request: { url: 'http://localhost:1999/party/ABCD?playerId=p3' } } as Party.ConnectionContext
+      {
+        request: { url: 'http://localhost:1999/party/ABCD?playerId=p3' },
+      } as Party.ConnectionContext
     );
 
     server.onMessage(
@@ -85,8 +91,8 @@ describe('PartyKit SplitTheRoomServer WebSocket Handler', () => {
     // Disconnect c2 and verify p2 is marked offline
     connections.delete('c2');
     server.onClose(conn2 as unknown as Party.Connection);
-    expect(
-      conn1.lastState()?.players.find((p) => p.id === 'p2')?.isConnected
-    ).toBe(false);
+    expect(conn1.lastState()?.players.find((p) => p.id === 'p2')?.isConnected).toBe(
+      false
+    );
   });
 });

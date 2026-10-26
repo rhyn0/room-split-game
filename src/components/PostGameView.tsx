@@ -1,16 +1,13 @@
-import React from 'react';
 import { Award, Crown, Gavel, RotateCcw, Trophy } from 'lucide-react';
-import { ClientRoomState, ClientToServerMessage } from '../../shared/types';
+import type React from 'react';
+import type { ClientRoomState, ClientToServerMessage } from '../../shared/types';
 
 interface PostGameViewProps {
   state: ClientRoomState;
   sendMessage: (msg: ClientToServerMessage) => void;
 }
 
-export const PostGameView: React.FC<PostGameViewProps> = ({
-  state,
-  sendMessage,
-}) => {
+export const PostGameView: React.FC<PostGameViewProps> = ({ state, sendMessage }) => {
   const me = state.players.find((p) => p.id === state.myPlayerId);
   const isHost = Boolean(me?.isHost);
 
@@ -83,8 +80,8 @@ export const PostGameView: React.FC<PostGameViewProps> = ({
               <span className="section-eyebrow">SHARPEST JUDGE</span>
               <h4>{bestJudgePlayer.name}</h4>
               <p>
-                Earned {judgeScoresByPlayer[bestJudgePlayer.id] ?? 0} points
-                finding minority splits from the bench
+                Earned {judgeScoresByPlayer[bestJudgePlayer.id] ?? 0} points finding
+                minority splits from the bench
               </p>
             </div>
           </div>
@@ -96,8 +93,8 @@ export const PostGameView: React.FC<PostGameViewProps> = ({
               <span className="section-eyebrow">MASTER SCHEMER</span>
               <h4>{bestRolePlayer.name}</h4>
               <p>
-                Earned +{bonusScoresByPlayer[bestRolePlayer.id] ?? 0} bonus
-                points from secret role objectives
+                Earned +{bonusScoresByPlayer[bestRolePlayer.id] ?? 0} bonus points from
+                secret role objectives
               </p>
             </div>
           </div>
@@ -117,17 +114,12 @@ export const PostGameView: React.FC<PostGameViewProps> = ({
             >
               <div className="leaderboard-left">
                 <span className="rank-number">#{index + 1}</span>
-                <span
-                  className="avatar-dot"
-                  style={{ backgroundColor: p.avatarColor }}
-                >
+                <span className="avatar-dot" style={{ backgroundColor: p.avatarColor }}>
                   {p.name.charAt(0).toUpperCase()}
                 </span>
                 <span className="leaderboard-name">
                   {p.name}
-                  {p.id === state.myPlayerId && (
-                    <span className="you-tag">YOU</span>
-                  )}
+                  {p.id === state.myPlayerId && <span className="you-tag">YOU</span>}
                 </span>
               </div>
               <div className="leaderboard-score">{p.score} pts</div>
@@ -147,23 +139,19 @@ export const PostGameView: React.FC<PostGameViewProps> = ({
                   ROUND {round.roundNumber} • JUDGE: {round.judgeName}
                 </span>
                 <span className="history-split-pill">
-                  Option A ({round.countA}) vs Option B ({round.countB}) • Judge
-                  picked Option {round.judgeChoice}
+                  Option A ({round.countA}) vs Option B ({round.countB}) • Judge picked
+                  Option {round.judgeChoice}
                 </span>
               </div>
               <p className="history-question">“{round.prompt.question}”</p>
               <div className="history-options-row">
                 <span
-                  className={
-                    round.judgeChoice === 'A' ? 'opt-picked' : 'opt-unpicked'
-                  }
+                  className={round.judgeChoice === 'A' ? 'opt-picked' : 'opt-unpicked'}
                 >
                   A: {round.prompt.optionA} ({round.countA})
                 </span>
                 <span
-                  className={
-                    round.judgeChoice === 'B' ? 'opt-picked' : 'opt-unpicked'
-                  }
+                  className={round.judgeChoice === 'B' ? 'opt-picked' : 'opt-unpicked'}
                 >
                   B: {round.prompt.optionB} ({round.countB})
                 </span>

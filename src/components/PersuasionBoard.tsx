@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   CheckCircle2,
   Eye,
@@ -10,8 +9,10 @@ import {
   Shuffle,
   Zap,
 } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { getRoleDefinition } from '../../shared/roles';
-import {
+import type {
   ChoiceOption,
   ClientRoomState,
   ClientToServerMessage,
@@ -45,9 +46,7 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
     (p) => !p.isSpectator && p.id !== state.judgeId && p.id !== state.myPlayerId
   );
 
-  const myRoleDef = state.myRole
-    ? getRoleDefinition(state.myRole.roleId)
-    : null;
+  const myRoleDef = state.myRole ? getRoleDefinition(state.myRole.roleId) : null;
 
   const mySignedStatementsCount = state.statements.filter(
     (s) => s.displayedAuthorId === state.myPlayerId && !s.isAnonymous
@@ -161,9 +160,8 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
         {isJudge && isPersuasionOpen && (
           <div className="judge-lock-board-bar">
             <span>
-              Listen to players in Discord & read the statement cards below. You
-              can lock the board first or pick Option A / B whenever you’re
-              ready!
+              Listen to players in Discord & read the statement cards below. You can
+              lock the board first or pick Option A / B whenever you’re ready!
             </span>
             <button
               type="button"
@@ -186,16 +184,15 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
                   Live Persuasion & Evidence Board ({state.statements.length})
                 </h3>
                 <p className="card-subtitle">
-                  Statements are signed by default — unless a Forger is in the
-                  room!
+                  Statements are signed by default — unless a Forger is in the room!
                 </p>
               </div>
             </div>
 
             {state.statements.length === 0 ? (
               <div className="empty-board-placeholder">
-                No pitch cards posted yet. Write an argument or bluff to sway
-                Judge <strong>{judgePlayer?.name}</strong>!
+                No pitch cards posted yet. Write an argument or bluff to sway Judge{' '}
+                <strong>{judgePlayer?.name}</strong>!
               </div>
             ) : (
               <div className="statements-feed" data-testid="statements-feed">
@@ -231,10 +228,7 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
             )}
 
             {isVoter && isPersuasionOpen && (
-              <form
-                onSubmit={handlePostStatement}
-                className="statement-composer"
-              >
+              <form onSubmit={handlePostStatement} className="statement-composer">
                 <div className="composer-top-row">
                   <span className="composer-title">
                     <MessageSquarePlus size={16} /> Post Signed Statement Card (
@@ -287,16 +281,11 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
                   <Zap size={14} /> {myRoleDef.name} Power
                 </span>
                 <h3 className="card-title">{myRoleDef.activePower.name}</h3>
-                <p className="card-subtitle">
-                  {myRoleDef.activePower.description}
-                </p>
+                <p className="card-subtitle">{myRoleDef.activePower.description}</p>
               </div>
 
               {state.myRole.hasUsedPower ? (
-                <div
-                  className="power-used-box"
-                  data-testid="power-used-confirmation"
-                >
+                <div className="power-used-box" data-testid="power-used-confirmation">
                   <CheckCircle2 size={20} />
                   <div>
                     <strong>Power Executed!</strong>
@@ -310,9 +299,7 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
                   </div>
                 </div>
               ) : !isPersuasionOpen ? (
-                <div className="power-used-box">
-                  Persuasion phase has ended.
-                </div>
+                <div className="power-used-box">Persuasion phase has ended.</div>
               ) : (
                 <div className="power-controls">
                   {(myRoleDef.activePower.type === 'PEEK' ||
@@ -354,8 +341,8 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
                     <div className="form-field">
                       <p className="power-hint">
                         You currently have{' '}
-                        <strong>Option {state.myLockedChoice}</strong> locked
-                        in. Flipping will secretly change your vote to{' '}
+                        <strong>Option {state.myLockedChoice}</strong> locked in.
+                        Flipping will secretly change your vote to{' '}
                         <strong>
                           Option {state.myLockedChoice === 'A' ? 'B' : 'A'}
                         </strong>
@@ -375,9 +362,7 @@ export const PersuasionBoard: React.FC<PersuasionBoardProps> = ({
 
                   {myRoleDef.activePower.type === 'PLANT_EVIDENCE' && (
                     <div className="form-field">
-                      <label className="field-label">
-                        Attribute Forged Card To:
-                      </label>
+                      <label className="field-label">Attribute Forged Card To:</label>
                       <select
                         className="select-input"
                         value={forgedAsId}

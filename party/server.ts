@@ -1,6 +1,6 @@
 import type * as Party from 'partykit/server';
 import { RoomGameEngine } from '../shared/engine';
-import { ClientToServerMessage, ServerToClientMessage } from '../shared/types';
+import type { ClientToServerMessage, ServerToClientMessage } from '../shared/types';
 
 export default class SplitTheRoomServer implements Party.Server {
   private engine: RoomGameEngine;
@@ -60,9 +60,7 @@ export default class SplitTheRoomServer implements Party.Server {
     if (!playerId) return;
 
     // Only mark disconnected if no other active connection uses this playerId
-    const stillConnected = Array.from(this.connToPlayerId.values()).includes(
-      playerId
-    );
+    const stillConnected = Array.from(this.connToPlayerId.values()).includes(playerId);
     if (!stillConnected) {
       this.engine.handleDisconnect(playerId);
     }

@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Bot,
   Check,
@@ -15,8 +14,10 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { ALL_ROLE_IDS, ROLES_CATALOG } from '../../shared/roles';
-import {
+import type {
   ClientRoomState,
   ClientToServerMessage,
   RoleId,
@@ -66,9 +67,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
     if (exists && current.length <= 1) {
       return; // Must keep at least 1 role enabled
     }
-    const next = exists
-      ? current.filter((id) => id !== roleId)
-      : [...current, roleId];
+    const next = exists ? current.filter((id) => id !== roleId) : [...current, roleId];
     sendMessage({
       type: 'UPDATE_SETTINGS',
       settings: { enabledRoles: next },
@@ -90,11 +89,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             </p>
           </div>
           <div className="room-code-actions">
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={handleCopyCode}
-            >
+            <button type="button" className="btn-secondary" onClick={handleCopyCode}>
               {copiedCode ? <Check size={16} /> : <Copy size={16} />}
               {copiedCode ? 'Copied Code' : 'Copy Code'}
             </button>
@@ -146,9 +141,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                   </span>
                   <span className="player-chip-name">
                     {p.name}
-                    {p.id === state.myPlayerId && (
-                      <span className="you-tag">YOU</span>
-                    )}
+                    {p.id === state.myPlayerId && <span className="you-tag">YOU</span>}
                   </span>
                   {p.isHost && (
                     <span className="badge-host" title="Room Host">
@@ -168,9 +161,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                   <button
                     type="button"
                     className="btn-icon-danger"
-                    onClick={() =>
-                      sendMessage({ type: 'REMOVE_BOT', botId: p.id })
-                    }
+                    onClick={() => sendMessage({ type: 'REMOVE_BOT', botId: p.id })}
                     title="Remove Bot"
                   >
                     <Trash2 size={15} />
@@ -343,12 +334,10 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             <div>
               <h2 className="card-title">
                 <Shield size={18} /> Secret Role Deck (
-                {state.settings.enabledRoles.length}/{ALL_ROLE_IDS.length}{' '}
-                Active)
+                {state.settings.enabledRoles.length}/{ALL_ROLE_IDS.length} Active)
               </h2>
               <p className="card-subtitle">
-                Every non-Judge voter is dealt 1 fresh secret Role Card each
-                round
+                Every non-Judge voter is dealt 1 fresh secret Role Card each round
               </p>
             </div>
           </div>

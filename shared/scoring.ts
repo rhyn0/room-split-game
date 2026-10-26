@@ -1,5 +1,5 @@
 import { getRoleDefinition } from './roles';
-import {
+import type {
   ChoiceOption,
   Player,
   PlayerRoleAssignment,
@@ -27,7 +27,10 @@ export interface CalculateRoundScoresInput {
  * - k = N (unanimous side) -> 0 pts
  * - 1 <= k < N -> (N - k) pts
  */
-export function calculateJudgePoints(totalVoters: number, chosenSideCount: number): number {
+export function calculateJudgePoints(
+  totalVoters: number,
+  chosenSideCount: number
+): number {
   if (totalVoters <= 0) return 0;
   if (chosenSideCount <= 0 || chosenSideCount >= totalVoters) {
     return 0;

@@ -1,6 +1,6 @@
-import React from 'react';
 import { CheckCircle2, Clock, Lock } from 'lucide-react';
-import {
+import type React from 'react';
+import type {
   ChoiceOption,
   ClientRoomState,
   ClientToServerMessage,
@@ -12,16 +12,11 @@ interface LockInViewProps {
   sendMessage: (msg: ClientToServerMessage) => void;
 }
 
-export const LockInView: React.FC<LockInViewProps> = ({
-  state,
-  sendMessage,
-}) => {
+export const LockInView: React.FC<LockInViewProps> = ({ state, sendMessage }) => {
   const isJudge = state.myPlayerId === state.judgeId;
   const me = state.players.find((p) => p.id === state.myPlayerId);
   const isVoter = Boolean(me && !me.isSpectator && !isJudge);
-  const voters = state.players.filter(
-    (p) => !p.isSpectator && p.id !== state.judgeId
-  );
+  const voters = state.players.filter((p) => !p.isSpectator && p.id !== state.judgeId);
   const lockedCount = voters.filter((v) => v.hasLockedIn).length;
   const judgePlayer = state.players.find((p) => p.id === state.judgeId);
 
@@ -99,8 +94,7 @@ export const LockInView: React.FC<LockInViewProps> = ({
       <div className="card lockin-status-card">
         <div className="card-header-row">
           <h3 className="card-title">
-            <Lock size={17} /> Secret Lock-In Progress ({lockedCount}/
-            {voters.length})
+            <Lock size={17} /> Secret Lock-In Progress ({lockedCount}/{voters.length})
           </h3>
           <span className="card-subtitle">
             {isJudge
@@ -114,11 +108,7 @@ export const LockInView: React.FC<LockInViewProps> = ({
               key={v.id}
               className={`voter-status-pill ${v.hasLockedIn ? 'voter-status-ready' : 'voter-status-waiting'}`}
             >
-              {v.hasLockedIn ? (
-                <CheckCircle2 size={15} />
-              ) : (
-                <Clock size={15} />
-              )}
+              {v.hasLockedIn ? <CheckCircle2 size={15} /> : <Clock size={15} />}
               <span>{v.name}</span>
               <span className="status-tag">
                 {v.hasLockedIn ? 'Locked' : 'Choosing...'}

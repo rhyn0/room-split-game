@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { RoomGameEngine } from '../shared/engine';
 import { dealRolesForRound } from '../shared/roles';
 import { calculateJudgePoints, calculateRoundSummary } from '../shared/scoring';
-import { Player, PlayerRoleAssignment } from '../shared/types';
+import type { Player, PlayerRoleAssignment } from '../shared/types';
 
 function makePlayer(id: string, name: string): Player {
   return {
@@ -48,19 +48,19 @@ describe('Judge & Role Scoring Engine', () => {
       turncoatSwitchedIds: new Set(),
     });
 
-    const jBd = summary.breakdowns.find((b) => b.playerId === 'j')!;
-    const v1Bd = summary.breakdowns.find((b) => b.playerId === 'v1')!;
-    const v2Bd = summary.breakdowns.find((b) => b.playerId === 'v2')!;
+    const jBd = summary.breakdowns.find((b) => b.playerId === 'j');
+    const v1Bd = summary.breakdowns.find((b) => b.playerId === 'v1');
+    const v2Bd = summary.breakdowns.find((b) => b.playerId === 'v2');
 
-    expect(jBd.totalRoundPoints).toBe(0);
+    expect(jBd?.totalRoundPoints).toBe(0);
     // Alice (Baiter) got 0 base + 3 bonus = 3
-    expect(v1Bd.basePoints).toBe(0);
-    expect(v1Bd.bonusPoints).toBe(3);
-    expect(v1Bd.totalRoundPoints).toBe(3);
+    expect(v1Bd?.basePoints).toBe(0);
+    expect(v1Bd?.bonusPoints).toBe(3);
+    expect(v1Bd?.totalRoundPoints).toBe(3);
     // Bob (Double Agent) wanted Judge to pick opposite of A (Judge picked B) -> +2 pts
-    expect(v2Bd.basePoints).toBe(0);
-    expect(v2Bd.bonusPoints).toBe(2);
-    expect(v2Bd.totalRoundPoints).toBe(2);
+    expect(v2Bd?.basePoints).toBe(0);
+    expect(v2Bd?.bonusPoints).toBe(2);
+    expect(v2Bd?.totalRoundPoints).toBe(2);
   });
 
   it('awards Lone Wolf (+3), Union Boss (+2), Accomplice (+2), and Saboteur (+2)', () => {
@@ -100,11 +100,17 @@ describe('Judge & Role Scoring Engine', () => {
     });
 
     // Judge gets 4 - 1 = 3 pts
-    expect(summary1.breakdowns.find((b) => b.playerId === 'j')!.totalRoundPoints).toBe(3);
+    expect(summary1.breakdowns.find((b) => b.playerId === 'j')?.totalRoundPoints).toBe(
+      3
+    );
     // Wolf gets 2 base + 3 Lone Wolf = 5 pts
-    expect(summary1.breakdowns.find((b) => b.playerId === 'v1')!.totalRoundPoints).toBe(5);
+    expect(summary1.breakdowns.find((b) => b.playerId === 'v1')?.totalRoundPoints).toBe(
+      5
+    );
     // Accomplice (v3) matched B with Sab (v4) -> 0 base + 2 bonus = 2 pts
-    expect(summary1.breakdowns.find((b) => b.playerId === 'v3')!.totalRoundPoints).toBe(2);
+    expect(summary1.breakdowns.find((b) => b.playerId === 'v3')?.totalRoundPoints).toBe(
+      2
+    );
 
     // Case 2: Judge picks B where 3 of 4 voters are present (k = 3 > 4/2, Judge gets 4 - 3 = 1 pt)
     const summary2 = calculateRoundSummary({
@@ -121,10 +127,16 @@ describe('Judge & Role Scoring Engine', () => {
     });
 
     // Judge gets 1 pt -> Saboteur (v4) triggers bonus (+2) + base (+2) = 4 pts!
-    expect(summary2.breakdowns.find((b) => b.playerId === 'j')!.totalRoundPoints).toBe(1);
-    expect(summary2.breakdowns.find((b) => b.playerId === 'v4')!.totalRoundPoints).toBe(4);
+    expect(summary2.breakdowns.find((b) => b.playerId === 'j')?.totalRoundPoints).toBe(
+      1
+    );
+    expect(summary2.breakdowns.find((b) => b.playerId === 'v4')?.totalRoundPoints).toBe(
+      4
+    );
     // Union Boss (v2) has k = 3 > 2 -> 2 base + 2 bonus = 4 pts!
-    expect(summary2.breakdowns.find((b) => b.playerId === 'v2')!.totalRoundPoints).toBe(4);
+    expect(summary2.breakdowns.find((b) => b.playerId === 'v2')?.totalRoundPoints).toBe(
+      4
+    );
   });
 
   it('deals valid Accomplice partners and respects enabled role pools', () => {
@@ -163,12 +175,12 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
     expect(engine.totalRounds).toBe(3);
 
     // Override roles for Round 1 to test Forger, Saboteur, Wiretapper, Turncoat
-    engine.roleAssignments['p2'] = {
+    engine.roleAssignments.p2 = {
       playerId: 'p2',
       roleId: 'forger',
       hasUsedPower: false,
     };
-    engine.roleAssignments['p3'] = {
+    engine.roleAssignments.p3 = {
       playerId: 'p3',
       roleId: 'saboteur',
       hasUsedPower: false,
@@ -196,9 +208,9 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
 
     // Verify p1 (Judge) sees p2 hasLockedIn=true, but revealedChoice is undefined!
     const p1MidLock = engine.getStateForPlayer('p1');
-    const p2InP1View = p1MidLock.players.find((p) => p.id === 'p2')!;
-    expect(p2InP1View.hasLockedIn).toBe(true);
-    expect(p2InP1View.revealedChoice).toBeUndefined();
+    const p2InP1View = p1MidLock.players.find((p) => p.id === 'p2');
+    expect(p2InP1View?.hasLockedIn).toBe(true);
+    expect(p2InP1View?.revealedChoice).toBeUndefined();
 
     engine.handleMessage('p3', { type: 'LOCK_IN_CHOICE', choice: 'B' });
     // All voters locked -> auto advances to PHASE3_PERSUASION!
@@ -231,7 +243,7 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
     // CRITICAL PRIVACY CHECK: p2 must still see `myLockedChoice === 'A'` during Phase 3 so they don't know they were nudged!
     expect(engine.getStateForPlayer('p2').myLockedChoice).toBe('A');
     // Meanwhile canonical server finalChoices['p2'] is now 'B'!
-    expect(engine.finalChoices['p2']).toBe('B');
+    expect(engine.finalChoices.p2).toBe('B');
 
     // Phase 4 / Verdict: Judge p1 picks Option A (which now has 0 players because p2 was nudged to B and p3 is on B!)
     engine.handleMessage('p1', { type: 'SUBMIT_JUDGE_VERDICT', choice: 'A' });
@@ -249,16 +261,14 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
     expect(
       engine
         .getStateForPlayer('p1')
-        .currentRoundSummary?.breakdowns.find((b) => b.playerId === 'p2')
-        ?.finalChoice
+        .currentRoundSummary?.breakdowns.find((b) => b.playerId === 'p2')?.finalChoice
     ).toBeUndefined();
 
     engine.handleMessage('p2', { type: 'TOGGLE_REVEAL_MY_VOTE' });
     expect(
       engine
         .getStateForPlayer('p1')
-        .currentRoundSummary?.breakdowns.find((b) => b.playerId === 'p2')
-        ?.finalChoice
+        .currentRoundSummary?.breakdowns.find((b) => b.playerId === 'p2')?.finalChoice
     ).toBe('B');
   });
 
@@ -334,12 +344,12 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
     });
 
     engine.handleMessage('p1', { type: 'START_MATCH' });
-    engine.roleAssignments['p2'] = {
+    engine.roleAssignments.p2 = {
       playerId: 'p2',
       roleId: 'wiretapper',
       hasUsedPower: false,
     };
-    engine.roleAssignments['p3'] = {
+    engine.roleAssignments.p3 = {
       playerId: 'p3',
       roleId: 'turncoat',
       hasUsedPower: false,
@@ -369,7 +379,7 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
       powerType: 'LATE_FLIP',
     });
     expect(engine.getStateForPlayer('p3').myLockedChoice).toBe('A');
-    expect(engine.finalChoices['p3']).toBe('A');
+    expect(engine.finalChoices.p3).toBe('A');
 
     // Judge picks A -> both p2 and p3 are on A (unanimous k = 2/2 -> Judge gets 0, p2 gets 2+1=3, p3 gets 2+1=3)
     engine.handleMessage('p1', { type: 'SUBMIT_JUDGE_VERDICT', choice: 'A' });
@@ -439,4 +449,3 @@ describe('RoomGameEngine Full Match State Machine & Privacy Guarantees', () => {
     expect(engine.phase).toBe('PHASE5_REVEAL_AND_SCORE');
   });
 });
-

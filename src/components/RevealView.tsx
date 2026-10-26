@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   ArrowRight,
   Eye,
@@ -9,17 +8,15 @@ import {
   Sparkles,
   Trophy,
 } from 'lucide-react';
-import { ClientRoomState, ClientToServerMessage } from '../../shared/types';
+import type React from 'react';
+import type { ClientRoomState, ClientToServerMessage } from '../../shared/types';
 
 interface RevealViewProps {
   state: ClientRoomState;
   sendMessage: (msg: ClientToServerMessage) => void;
 }
 
-export const RevealView: React.FC<RevealViewProps> = ({
-  state,
-  sendMessage,
-}) => {
+export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) => {
   const summary = state.currentRoundSummary;
   if (!summary) return null;
 
@@ -28,9 +25,7 @@ export const RevealView: React.FC<RevealViewProps> = ({
   const isJudge = state.myPlayerId === state.judgeId;
   const canAdvance = isJudge || isHost;
 
-  const myBreakdown = summary.breakdowns.find(
-    (b) => b.playerId === state.myPlayerId
-  );
+  const myBreakdown = summary.breakdowns.find((b) => b.playerId === state.myPlayerId);
   const judgeBreakdown = summary.breakdowns.find((b) => b.isJudge);
 
   const pctA =
@@ -46,15 +41,11 @@ export const RevealView: React.FC<RevealViewProps> = ({
       {/* Dramatic Split Verdict Card */}
       <div className="card reveal-hero-card">
         <div className="reveal-verdict-banner">
-          <span className="section-eyebrow">
-            ROUND {summary.roundNumber} VERDICT
-          </span>
+          <span className="section-eyebrow">ROUND {summary.roundNumber} VERDICT</span>
           <h2 className="reveal-headline" data-testid="reveal-verdict-headline">
             Judge <strong>{summary.judgeName}</strong> Chose{' '}
             <span
-              className={
-                summary.judgeChoice === 'A' ? 'highlight-a' : 'highlight-b'
-              }
+              className={summary.judgeChoice === 'A' ? 'highlight-a' : 'highlight-b'}
             >
               Option {summary.judgeChoice}
             </span>
@@ -63,8 +54,7 @@ export const RevealView: React.FC<RevealViewProps> = ({
           <p className="reveal-judge-score">
             <Gavel size={16} />{' '}
             <strong>
-              {summary.judgeName} earned +{judgeBreakdown?.totalRoundPoints ?? 0}{' '}
-              pts
+              {summary.judgeName} earned +{judgeBreakdown?.totalRoundPoints ?? 0} pts
             </strong>{' '}
             — {judgeBreakdown?.bonusReason}
           </p>
@@ -118,21 +108,18 @@ export const RevealView: React.FC<RevealViewProps> = ({
                 {myBreakdown.wasNudgedBySaboteur && (
                   <span className="saboteur-alert-inline">
                     {' '}
-                    (Nudged from Option {myBreakdown.initialChoice} by a
-                    Saboteur!)
+                    (Nudged from Option {myBreakdown.initialChoice} by a Saboteur!)
                   </span>
                 )}
                 <p className="optin-sub">
-                  In Player Choice mode, your vote stays hidden unless you
-                  choose to show it.
+                  In Player Choice mode, your vote stays hidden unless you choose to
+                  show it.
                 </p>
               </div>
               <button
                 type="button"
                 className={
-                  myBreakdown.voluntarilyRevealedVote
-                    ? 'btn-secondary'
-                    : 'btn-primary'
+                  myBreakdown.voluntarilyRevealedVote ? 'btn-secondary' : 'btn-primary'
                 }
                 onClick={() => sendMessage({ type: 'TOGGLE_REVEAL_MY_VOTE' })}
                 data-testid="toggle-reveal-vote-btn"
@@ -152,35 +139,32 @@ export const RevealView: React.FC<RevealViewProps> = ({
       </div>
 
       {/* Forged Statements Unmasked */}
-      {forgedCards.length > 0 &&
-        state.settings.voteRevealMode !== 'fog_of_war' && (
-          <div className="card forgery-reveal-card">
-            <h3 className="card-title">
-              <FileWarning size={18} /> Unmasked Forgeries on the Board!
-            </h3>
-            <div className="forged-list">
-              {forgedCards.map((fc) => (
-                <div key={fc.id} className="forged-item">
-                  <span className="forged-stamp">
-                    PLANTED BY {fc.trueAuthorName.toUpperCase()}
-                  </span>
-                  <span>
-                    Disguised as <strong>{fc.displayedAuthorName}</strong>: “
-                    {fc.text}”
-                  </span>
-                </div>
-              ))}
-            </div>
+      {forgedCards.length > 0 && state.settings.voteRevealMode !== 'fog_of_war' && (
+        <div className="card forgery-reveal-card">
+          <h3 className="card-title">
+            <FileWarning size={18} /> Unmasked Forgeries on the Board!
+          </h3>
+          <div className="forged-list">
+            {forgedCards.map((fc) => (
+              <div key={fc.id} className="forged-item">
+                <span className="forged-stamp">
+                  PLANTED BY {fc.trueAuthorName.toUpperCase()}
+                </span>
+                <span>
+                  Disguised as <strong>{fc.displayedAuthorName}</strong>: “{fc.text}”
+                </span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
       {/* Round Breakdown & Leaderboard */}
       <div className="card">
         <div className="card-header-row">
           <div>
             <h3 className="card-title">
-              <Sparkles size={18} /> Round {summary.roundNumber} Roles, Powers &
-              Points
+              <Sparkles size={18} /> Round {summary.roundNumber} Roles, Powers & Points
             </h3>
             <p className="card-subtitle">
               {state.settings.voteRevealMode === 'fog_of_war'
@@ -234,9 +218,7 @@ export const RevealView: React.FC<RevealViewProps> = ({
                   <div>
                     <div className="breakdown-name">
                       {b.playerName}
-                      {b.isJudge && (
-                        <span className="judge-mini-tag">JUDGE</span>
-                      )}
+                      {b.isJudge && <span className="judge-mini-tag">JUDGE</span>}
                     </div>
                     <div className="breakdown-role-sub">
                       {b.isJudge
@@ -283,9 +265,7 @@ export const RevealView: React.FC<RevealViewProps> = ({
                     <span className="score-pill-masked">? pts</span>
                   ) : (
                     <>
-                      <span className="round-pts-badge">
-                        +{b.totalRoundPoints} pts
-                      </span>
+                      <span className="round-pts-badge">+{b.totalRoundPoints} pts</span>
                       <span className="total-pts-sub">
                         Total: {playerObj?.score ?? 0} pts
                       </span>

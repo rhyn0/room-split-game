@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
 import { Gavel, Scale, Send } from 'lucide-react';
-import { ClientRoomState, ClientToServerMessage } from '../../shared/types';
+import type React from 'react';
+import { useState } from 'react';
+import type { ClientRoomState, ClientToServerMessage } from '../../shared/types';
 import { RoleCardBanner } from './RoleCardBanner';
 
 interface JudgePromptViewProps {
@@ -54,12 +55,12 @@ export const JudgePromptView: React.FC<JudgePromptViewProps> = ({
               Write a 2-Choice Question to Split the Room
             </h2>
             <p className="phase-subtext">
-              There are <strong>{voterCount} voters</strong> this round. You
-              will score <strong>(N − k) points</strong> for picking a side with{' '}
-              <strong>k</strong> players (max{' '}
-              <strong>{Math.max(1, voterCount - 1)} pts</strong> if exactly 1
-              player picks it!). Beware: picking an <strong>empty side (k = 0)</strong>{' '}
-              or a <strong>unanimous side (k = {voterCount})</strong> scores{' '}
+              There are <strong>{voterCount} voters</strong> this round. You will score{' '}
+              <strong>(N − k) points</strong> for picking a side with <strong>k</strong>{' '}
+              players (max <strong>{Math.max(1, voterCount - 1)} pts</strong> if exactly
+              1 player picks it!). Beware: picking an{' '}
+              <strong>empty side (k = 0)</strong> or a{' '}
+              <strong>unanimous side (k = {voterCount})</strong> scores{' '}
               <strong>0 points</strong>!
             </p>
           </div>
@@ -139,9 +140,8 @@ export const JudgePromptView: React.FC<JudgePromptViewProps> = ({
             2-choice question...
           </h2>
           <p className="phase-subtext">
-            Study your secret Role Card above and plan how you will bluff or
-            persuade <strong>{judgePlayer?.name}</strong> once the question
-            drops!
+            Study your secret Role Card above and plan how you will bluff or persuade{' '}
+            <strong>{judgePlayer?.name}</strong> once the question drops!
           </p>
         </div>
       )}

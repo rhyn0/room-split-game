@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   Clock,
   Gavel,
@@ -13,6 +12,8 @@ import {
   Wifi,
   WifiOff,
 } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { JudgePromptView } from './components/JudgePromptView';
 import { LobbyView } from './components/LobbyView';
 import { LockInView } from './components/LockInView';
@@ -55,15 +56,13 @@ export const App: React.FC = () => {
 
   // Countdown timer ticker
   useEffect(() => {
-    if (!roomState?.phaseDeadlineMs) {
+    const deadlineMs = roomState?.phaseDeadlineMs;
+    if (!deadlineMs) {
       setSecondsLeft(null);
       return;
     }
     const updateTimer = () => {
-      const diff = Math.max(
-        0,
-        Math.ceil((roomState.phaseDeadlineMs! - Date.now()) / 1000)
-      );
+      const diff = Math.max(0, Math.ceil((deadlineMs - Date.now()) / 1000));
       setSecondsLeft(diff);
     };
     updateTimer();
@@ -118,9 +117,7 @@ export const App: React.FC = () => {
           </div>
           <div>
             <span className="brand-title">SPLIT THE ROOM</span>
-            <span className="brand-subtitle">
-              Social Deduction & Persuasion
-            </span>
+            <span className="brand-subtitle">Social Deduction & Persuasion</span>
           </div>
         </div>
 
@@ -148,8 +145,7 @@ export const App: React.FC = () => {
             <div className="conn-indicator">
               {connectionStatus === 'connected' ? (
                 <span className="conn-ok">
-                  <Wifi size={14} />{' '}
-                  {isSandboxMode ? 'Local Sandbox' : 'Live Edge'}
+                  <Wifi size={14} /> {isSandboxMode ? 'Local Sandbox' : 'Live Edge'}
                 </span>
               ) : (
                 <span className="conn-warn">
@@ -199,9 +195,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="seat-btn seat-btn-add"
                 onClick={() => {
-                  const humanCount = roomState.players.filter(
-                    (p) => !p.isBot
-                  ).length;
+                  const humanCount = roomState.players.filter((p) => !p.isBot).length;
                   addSandboxHumanSeat(`Player ${humanCount + 1}`);
                 }}
                 data-testid="add-sandbox-seat-btn"
@@ -265,11 +259,11 @@ export const App: React.FC = () => {
                 <span className="hero-gradient-text">Split the Room.</span>
               </h1>
               <p className="hero-lead">
-                Each round, the <strong>Judge</strong> writes a free-form
-                2-choice dilemma to divide the group and hunt for the{' '}
-                <strong>smallest non-zero minority</strong>. Everyone else locks
-                in secretly, receives a hidden <strong>Role Card</strong>, and
-                bluffs on the persuasion board to bait the Judge!
+                Each round, the <strong>Judge</strong> writes a free-form 2-choice
+                dilemma to divide the group and hunt for the{' '}
+                <strong>smallest non-zero minority</strong>. Everyone else locks in
+                secretly, receives a hidden <strong>Role Card</strong>, and bluffs on
+                the persuasion board to bait the Judge!
               </p>
             </div>
 
@@ -280,8 +274,7 @@ export const App: React.FC = () => {
                   <Users size={19} /> Play Live with Friends
                 </h2>
                 <p className="card-subtitle">
-                  Powered by PartyKit real-time edge rooms — zero sign-up
-                  required
+                  Powered by PartyKit real-time edge rooms — zero sign-up required
                 </p>
 
                 <div className="form-field">
@@ -319,9 +312,7 @@ export const App: React.FC = () => {
                       maxLength={6}
                       placeholder="ABCD"
                       value={joinCodeInput}
-                      onChange={(e) =>
-                        setJoinCodeInput(e.target.value.toUpperCase())
-                      }
+                      onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
                       data-testid="join-code-input"
                     />
                     <button
@@ -341,9 +332,7 @@ export const App: React.FC = () => {
                       onChange={(e) => setJoinAsSpectator(e.target.checked)}
                     />
                     <Monitor size={15} />
-                    <span>
-                      Join as Shared TV / Discord Stage Display (Spectator)
-                    </span>
+                    <span>Join as Shared TV / Discord Stage Display (Spectator)</span>
                   </label>
                 </div>
 
@@ -351,8 +340,8 @@ export const App: React.FC = () => {
                   <div>
                     <strong>Testing solo or offline?</strong>
                     <p>
-                      Launch a multi-seat sandbox right in your browser to test
-                      roles, bots, and multiple player views side-by-side.
+                      Launch a multi-seat sandbox right in your browser to test roles,
+                      bots, and multiple player views side-by-side.
                     </p>
                   </div>
                   <button
@@ -377,9 +366,8 @@ export const App: React.FC = () => {
                     <div>
                       <h4>The Judge Writes a 2-Choice Dilemma</h4>
                       <p>
-                        Strictly free-form: ask a philosophical question, hot
-                        take, or trap designed to divide your friends into
-                        Option A vs. Option B.
+                        Strictly free-form: ask a philosophical question, hot take, or
+                        trap designed to divide your friends into Option A vs. Option B.
                       </p>
                     </div>
                   </div>
@@ -388,10 +376,10 @@ export const App: React.FC = () => {
                     <div>
                       <h4>Secret Lock-In & Hidden Role Cards</h4>
                       <p>
-                        All <strong>N</strong> voters secretly lock in A or B
-                        and receive a secret Role Card (like{' '}
-                        <em>The Baiter</em>, <em>The Lone Wolf</em>,{' '}
-                        <em>The Forger</em>, or <em>The Saboteur</em>).
+                        All <strong>N</strong> voters secretly lock in A or B and
+                        receive a secret Role Card (like <em>The Baiter</em>,{' '}
+                        <em>The Lone Wolf</em>, <em>The Forger</em>, or{' '}
+                        <em>The Saboteur</em>).
                       </p>
                     </div>
                   </div>
@@ -400,10 +388,9 @@ export const App: React.FC = () => {
                     <div>
                       <h4>Persuasion & Active Powers</h4>
                       <p>
-                        Post pitch cards on the board (or bluff over Discord!).
-                        Trigger active powers to wiretap a vote, forge a card
-                        under a friend’s name, or secretly nudge someone’s
-                        choice!
+                        Post pitch cards on the board (or bluff over Discord!). Trigger
+                        active powers to wiretap a vote, forge a card under a friend’s
+                        name, or secretly nudge someone’s choice!
                       </p>
                     </div>
                   </div>
@@ -412,10 +399,9 @@ export const App: React.FC = () => {
                     <div>
                       <h4>The Non-Zero Minority Verdict</h4>
                       <p>
-                        The Judge picks A or B. If <strong>k</strong> players
-                        are on that side, the Judge scores{' '}
-                        <strong>(N − k) pts</strong>—but scores{' '}
-                        <strong>0 pts</strong> if baited into an empty side (
+                        The Judge picks A or B. If <strong>k</strong> players are on
+                        that side, the Judge scores <strong>(N − k) pts</strong>—but
+                        scores <strong>0 pts</strong> if baited into an empty side (
                         <strong>k = 0</strong>) or unanimous side (
                         <strong>k = N</strong>)! Voters on the Judge’s side earn{' '}
                         <strong>+2 base pts</strong> + Role Bonuses!
