@@ -5,7 +5,9 @@ import type {
   ClientRoomState,
   ClientToServerMessage,
 } from '../../shared/types';
+import { cn } from '../lib/utils';
 import { RoleCardBanner } from './RoleCardBanner';
+import { Badge, Card, ChoiceSideLabel, choiceCardVariants } from './ui';
 
 interface LockInViewProps {
   state: ClientRoomState;
@@ -26,7 +28,7 @@ export const LockInView: React.FC<LockInViewProps> = ({ state, sendMessage }) =>
   };
 
   return (
-    <div className="phase-container">
+    <div className="flex flex-col gap-5">
       {!isJudge && state.myRole && (
         <RoleCardBanner
           assignment={state.myRole}
@@ -34,31 +36,38 @@ export const LockInView: React.FC<LockInViewProps> = ({ state, sendMessage }) =>
         />
       )}
 
-      <div className="card question-showcase-card">
-        <div className="question-meta">
-          <span className="section-eyebrow">
-            JUDGE {judgePlayer?.name.toUpperCase()} ASKS:
-          </span>
-        </div>
-        <h2 className="question-text" data-testid="active-question-text">
+      <Card padding="lg" className="text-center">
+        <span className="text-xs font-extrabold tracking-widest uppercase text-indigo-300">
+          JUDGE {judgePlayer?.name.toUpperCase()} ASKS:
+        </span>
+        <h2
+          className="font-display text-2xl sm:text-3xl font-extrabold mt-2 mb-6"
+          data-testid="active-question-text"
+        >
           “{state.prompt?.question}”
         </h2>
 
-        <div className="choice-cards-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             type="button"
             disabled={!isVoter}
             onClick={() => handleSelectOption('A')}
-            className={`choice-card choice-card-a ${state.myLockedChoice === 'A' ? 'choice-card-selected' : ''}`}
+            className={cn(
+              choiceCardVariants({
+                side: 'A',
+                selected: state.myLockedChoice === 'A',
+                interactive: isVoter,
+              })
+            )}
             data-testid="lock-option-a-btn"
           >
-            <div className="choice-card-badge">OPTION A</div>
-            <div className="choice-card-label">{state.prompt?.optionA}</div>
+            <ChoiceSideLabel side="A" />
+            <div className="text-xl font-bold">{state.prompt?.optionA}</div>
             {isVoter && (
-              <div className="choice-card-footer">
+              <div className="text-xs text-slate-400">
                 {state.myLockedChoice === 'A' ? (
-                  <span className="locked-confirm">
-                    <Lock size={15} /> Secretly Locked In
+                  <span className="inline-flex items-center gap-1.5 font-bold text-emerald-400">
+                    <Lock size={14} /> Secretly Locked In
                   </span>
                 ) : (
                   <span>Click to Lock In Option A</span>
@@ -71,16 +80,22 @@ export const LockInView: React.FC<LockInViewProps> = ({ state, sendMessage }) =>
             type="button"
             disabled={!isVoter}
             onClick={() => handleSelectOption('B')}
-            className={`choice-card choice-card-b ${state.myLockedChoice === 'B' ? 'choice-card-selected' : ''}`}
+            className={cn(
+              choiceCardVariants({
+                side: 'B',
+                selected: state.myLockedChoice === 'B',
+                interactive: isVoter,
+              })
+            )}
             data-testid="lock-option-b-btn"
           >
-            <div className="choice-card-badge">OPTION B</div>
-            <div className="choice-card-label">{state.prompt?.optionB}</div>
+            <ChoiceSideLabel side="B" />
+            <div className="text-xl font-bold">{state.prompt?.optionB}</div>
             {isVoter && (
-              <div className="choice-card-footer">
+              <div className="text-xs text-slate-400">
                 {state.myLockedChoice === 'B' ? (
-                  <span className="locked-confirm">
-                    <Lock size={15} /> Secretly Locked In
+                  <span className="inline-flex items-center gap-1.5 font-bold text-emerald-400">
+                    <Lock size={14} /> Secretly Locked In
                   </span>
                 ) : (
                   <span>Click to Lock In Option B</span>
@@ -89,34 +104,38 @@ export const LockInView: React.FC<LockInViewProps> = ({ state, sendMessage }) =>
             )}
           </button>
         </div>
-      </div>
+      </Card>
 
-      <div className="card lockin-status-card">
-        <div className="card-header-row">
-          <h3 className="card-title">
-            <Lock size={17} /> Secret Lock-In Progress ({lockedCount}/{voters.length})
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h3 className="font-display text-lg font-bold flex items-center gap-2">
+            <Lock size={17} className="text-indigo-400" /> Secret Lock-In Progress (
+            {lockedCount}/{voters.length})
           </h3>
-          <span className="card-subtitle">
+          <span className="text-xs text-slate-400">
             {isJudge
               ? 'You are the Judge — wait for all voters to secretly lock in their choice!'
               : 'All votes are strictly hidden until Persuasion begins'}
           </span>
         </div>
-        <div className="voter-lock-pills">
+
+        <div className="flex flex-wrap gap-2.5">
           {voters.map((v) => (
-            <div
+            <Badge
               key={v.id}
-              className={`voter-status-pill ${v.hasLockedIn ? 'voter-status-ready' : 'voter-status-waiting'}`}
+              variant={v.hasLockedIn ? 'success' : 'muted'}
+              size="md"
+              className="py-1.5 px-3.5"
             >
-              {v.hasLockedIn ? <CheckCircle2 size={15} /> : <Clock size={15} />}
+              {v.hasLockedIn ? <CheckCircle2 size={14} /> : <Clock size={14} />}
               <span>{v.name}</span>
-              <span className="status-tag">
-                {v.hasLockedIn ? 'Locked' : 'Choosing...'}
+              <span className="opacity-75 font-normal">
+                • {v.hasLockedIn ? 'Locked' : 'Choosing...'}
               </span>
-            </div>
+            </Badge>
           ))}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

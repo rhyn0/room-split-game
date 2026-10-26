@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import type React from 'react';
 import type { ClientRoomState, ClientToServerMessage } from '../../shared/types';
+import { cn } from '../lib/utils';
+import { Badge, Button, Card } from './ui';
 
 interface RevealViewProps {
   state: ClientRoomState;
@@ -37,62 +39,79 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
   const forgedCards = state.statements.filter((s) => s.isForged);
 
   return (
-    <div className="phase-container">
+    <div className="flex flex-col gap-5">
       {/* Dramatic Split Verdict Card */}
-      <div className="card reveal-hero-card">
-        <div className="reveal-verdict-banner">
-          <span className="section-eyebrow">ROUND {summary.roundNumber} VERDICT</span>
-          <h2 className="reveal-headline" data-testid="reveal-verdict-headline">
-            Judge <strong>{summary.judgeName}</strong> Chose{' '}
-            <span
-              className={summary.judgeChoice === 'A' ? 'highlight-a' : 'highlight-b'}
-            >
-              Option {summary.judgeChoice}
-            </span>
-            !
-          </h2>
-          <p className="reveal-judge-score">
-            <Gavel size={16} />{' '}
+      <Card padding="lg" className="text-center">
+        <span className="text-xs font-extrabold tracking-widest uppercase text-indigo-300">
+          ROUND {summary.roundNumber} VERDICT
+        </span>
+        <h2
+          className="font-display text-3xl sm:text-4xl font-extrabold my-2"
+          data-testid="reveal-verdict-headline"
+        >
+          Judge <strong>{summary.judgeName}</strong> Chose{' '}
+          <span
+            className={summary.judgeChoice === 'A' ? 'text-sky-400' : 'text-rose-400'}
+          >
+            Option {summary.judgeChoice}
+          </span>
+          !
+        </h2>
+        <div className="mt-2">
+          <Badge variant="judge" size="md" className="px-4 py-1.5 text-sm">
+            <Gavel size={15} />{' '}
             <strong>
               {summary.judgeName} earned +{judgeBreakdown?.totalRoundPoints ?? 0} pts
             </strong>{' '}
             — {judgeBreakdown?.bonusReason}
-          </p>
+          </Badge>
         </div>
 
         {/* Visual Room Split Bar */}
-        <div className="split-meter-wrapper">
-          <div className="split-meter-labels">
-            <div
-              className={`split-side-summary ${summary.judgeChoice === 'A' ? 'chosen-side-pill-a' : ''}`}
+        <div className="my-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 text-left">
+            <Card
+              variant={summary.judgeChoice === 'A' ? 'optionA' : 'default'}
+              padding="sm"
             >
-              <span className="split-opt-tag">OPTION A</span>
-              <strong>{summary.prompt.optionA}</strong>
-              <span className="split-count-badge" data-testid="count-a-badge">
+              <div className="text-[11px] font-extrabold uppercase tracking-wider text-sky-400">
+                OPTION A {summary.judgeChoice === 'A' && '• JUDGE CHOSE THIS'}
+              </div>
+              <div className="font-bold text-base mt-0.5">{summary.prompt.optionA}</div>
+              <div
+                className="text-xs font-semibold text-slate-300 mt-1"
+                data-testid="count-a-badge"
+              >
                 {summary.countA} voter{summary.countA === 1 ? '' : 's'} ({pctA}
                 %)
-              </span>
-            </div>
+              </div>
+            </Card>
 
-            <div
-              className={`split-side-summary split-side-right ${summary.judgeChoice === 'B' ? 'chosen-side-pill-b' : ''}`}
+            <Card
+              variant={summary.judgeChoice === 'B' ? 'optionB' : 'default'}
+              padding="sm"
             >
-              <span className="split-opt-tag">OPTION B</span>
-              <strong>{summary.prompt.optionB}</strong>
-              <span className="split-count-badge" data-testid="count-b-badge">
+              <div className="text-[11px] font-extrabold uppercase tracking-wider text-rose-400">
+                OPTION B {summary.judgeChoice === 'B' && '• JUDGE CHOSE THIS'}
+              </div>
+              <div className="font-bold text-base mt-0.5">{summary.prompt.optionB}</div>
+              <div
+                className="text-xs font-semibold text-slate-300 mt-1"
+                data-testid="count-b-badge"
+              >
                 {summary.countB} voter{summary.countB === 1 ? '' : 's'} ({pctB}
                 %)
-              </span>
-            </div>
+              </div>
+            </Card>
           </div>
 
-          <div className="split-bar-track">
+          <div className="h-4 rounded-full overflow-hidden flex bg-slate-950 border border-slate-800">
             <div
-              className="split-bar-fill-a"
+              className="bg-gradient-to-r from-sky-600 to-sky-400 transition-all duration-500"
               style={{ width: `${Math.max(pctA, 6)}%` }}
             />
             <div
-              className="split-bar-fill-b"
+              className="bg-gradient-to-r from-rose-400 to-rose-600 transition-all duration-500"
               style={{ width: `${Math.max(pctB, 6)}%` }}
             />
           </div>
@@ -102,25 +121,23 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
         {state.settings.voteRevealMode === 'player_choice' &&
           myBreakdown &&
           !myBreakdown.isJudge && (
-            <div className="vote-reveal-optin-bar">
+            <div className="mt-4 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/35 flex flex-wrap items-center justify-between gap-4 text-left">
               <div>
-                <strong>Your Final Vote: Option {myBreakdown.finalChoice}</strong>
+                <strong className="text-sm text-white">
+                  Your Final Vote: Option {myBreakdown.finalChoice}
+                </strong>
                 {myBreakdown.wasNudgedBySaboteur && (
-                  <span className="saboteur-alert-inline">
-                    {' '}
+                  <span className="text-rose-300 font-bold text-xs ml-1.5">
                     (Nudged from Option {myBreakdown.initialChoice} by a Saboteur!)
                   </span>
                 )}
-                <p className="optin-sub">
+                <p className="text-xs text-slate-400 mt-0.5">
                   In Player Choice mode, your vote stays hidden unless you choose to
                   show it.
                 </p>
               </div>
-              <button
-                type="button"
-                className={
-                  myBreakdown.voluntarilyRevealedVote ? 'btn-secondary' : 'btn-primary'
-                }
+              <Button
+                variant={myBreakdown.voluntarilyRevealedVote ? 'secondary' : 'primary'}
                 onClick={() => sendMessage({ type: 'TOGGLE_REVEAL_MY_VOTE' })}
                 data-testid="toggle-reveal-vote-btn"
               >
@@ -133,49 +150,54 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
                     <Eye size={16} /> Reveal My Vote to Room
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           )}
-      </div>
+      </Card>
 
       {/* Forged Statements Unmasked */}
       {forgedCards.length > 0 && state.settings.voteRevealMode !== 'fog_of_war' && (
-        <div className="card forgery-reveal-card">
-          <h3 className="card-title">
-            <FileWarning size={18} /> Unmasked Forgeries on the Board!
+        <Card variant="danger">
+          <h3 className="font-display text-lg font-bold flex items-center gap-2 mb-3">
+            <FileWarning size={18} className="text-rose-400" /> Unmasked Forgeries on
+            the Board!
           </h3>
-          <div className="forged-list">
+          <div className="flex flex-col gap-2">
             {forgedCards.map((fc) => (
-              <div key={fc.id} className="forged-item">
-                <span className="forged-stamp">
+              <div
+                key={fc.id}
+                className="flex flex-wrap items-center gap-2.5 p-3 rounded-xl bg-rose-500/10 text-sm"
+              >
+                <Badge variant="danger">
                   PLANTED BY {fc.trueAuthorName.toUpperCase()}
-                </span>
-                <span>
+                </Badge>
+                <span className="text-slate-200">
                   Disguised as <strong>{fc.displayedAuthorName}</strong>: “{fc.text}”
                 </span>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Round Breakdown & Leaderboard */}
-      <div className="card">
-        <div className="card-header-row">
+      <Card>
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <h3 className="card-title">
-              <Sparkles size={18} /> Round {summary.roundNumber} Roles, Powers & Points
+            <h3 className="font-display text-lg font-bold flex items-center gap-2">
+              <Sparkles size={18} className="text-indigo-400" /> Round{' '}
+              {summary.roundNumber} Roles, Powers & Points
             </h3>
-            <p className="card-subtitle">
+            <p className="text-xs text-slate-400 mt-0.5">
               {state.settings.voteRevealMode === 'fog_of_war'
                 ? 'Fog of War Mode is active: other players’ roles, votes, and scores are concealed until the end of the match!'
                 : 'Full breakdown of secret roles, active powers used, and points earned'}
             </p>
           </div>
           {canAdvance && (
-            <button
-              type="button"
-              className="btn-primary btn-lg"
+            <Button
+              variant="primary"
+              size="lg"
               onClick={() => sendMessage({ type: 'NEXT_ROUND' })}
               data-testid="next-round-btn"
             >
@@ -189,11 +211,11 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
                   <Trophy size={18} /> View Final Standings
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
 
-        <div className="breakdown-table">
+        <div className="flex flex-col gap-2.5">
           {summary.breakdowns.map((b) => {
             const playerObj = state.players.find((p) => p.id === b.playerId);
             const isMaskedFog =
@@ -204,11 +226,16 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
             return (
               <div
                 key={b.playerId}
-                className={`breakdown-row ${b.playerId === state.myPlayerId ? 'breakdown-row-me' : ''}`}
+                className={cn(
+                  'grid grid-cols-1 md:grid-cols-[220px_1fr_auto] items-center gap-4 p-3.5 rounded-xl border bg-slate-950/65',
+                  b.playerId === state.myPlayerId
+                    ? 'border-indigo-500/60'
+                    : 'border-slate-800/80'
+                )}
               >
-                <div className="breakdown-player-col">
+                <div className="flex items-center gap-3">
                   <span
-                    className="avatar-dot"
+                    className="w-8 h-8 rounded-full inline-flex items-center justify-center font-extrabold text-sm text-white shrink-0"
                     style={{
                       backgroundColor: playerObj?.avatarColor ?? '#6366f1',
                     }}
@@ -216,11 +243,11 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
                     {b.playerName.charAt(0).toUpperCase()}
                   </span>
                   <div>
-                    <div className="breakdown-name">
+                    <div className="font-bold text-sm flex items-center gap-1.5">
                       {b.playerName}
-                      {b.isJudge && <span className="judge-mini-tag">JUDGE</span>}
+                      {b.isJudge && <Badge variant="judge">JUDGE</Badge>}
                     </div>
-                    <div className="breakdown-role-sub">
+                    <div className="text-xs text-indigo-300">
                       {b.isJudge
                         ? 'Asked the Question'
                         : isMaskedFog
@@ -230,43 +257,48 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
                   </div>
                 </div>
 
-                <div className="breakdown-details-col">
+                <div>
                   {!b.isJudge && !isMaskedFog && (
-                    <div className="breakdown-tags">
+                    <div className="flex flex-wrap items-center gap-2">
                       {b.finalChoice ? (
-                        <span
-                          className={`vote-chip vote-chip-${b.finalChoice.toLowerCase()}`}
+                        <Badge
+                          variant={b.finalChoice === 'A' ? 'optionA' : 'optionB'}
+                          size="md"
                         >
                           Voted Option {b.finalChoice}
                           {b.wasNudgedBySaboteur &&
                             ` (Nudged from ${b.initialChoice}!)`}
                           {b.switchedViaTurncoat && ' (Turncoat Flip)'}
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="vote-chip vote-chip-hidden">
+                        <Badge variant="muted" size="md">
                           Vote Concealed
-                        </span>
+                        </Badge>
                       )}
 
                       {b.powerLogSummary && (
-                        <span className="power-used-tag">
-                          <ShieldAlert size={13} /> {b.powerLogSummary}
-                        </span>
+                        <Badge variant="activePower" size="md">
+                          <ShieldAlert size={12} /> {b.powerLogSummary}
+                        </Badge>
                       )}
                     </div>
                   )}
                   {b.bonusReason && !isMaskedFog && (
-                    <div className="breakdown-reason">{b.bonusReason}</div>
+                    <div className="text-xs text-slate-300 mt-1">{b.bonusReason}</div>
                   )}
                 </div>
 
-                <div className="breakdown-score-col">
+                <div className="md:text-right flex flex-col md:items-end">
                   {isMaskedFog ? (
-                    <span className="score-pill-masked">? pts</span>
+                    <Badge variant="muted" size="md">
+                      ? pts
+                    </Badge>
                   ) : (
                     <>
-                      <span className="round-pts-badge">+{b.totalRoundPoints} pts</span>
-                      <span className="total-pts-sub">
+                      <span className="font-display text-lg font-extrabold text-emerald-400">
+                        +{b.totalRoundPoints} pts
+                      </span>
+                      <span className="text-xs text-slate-400">
                         Total: {playerObj?.score ?? 0} pts
                       </span>
                     </>
@@ -276,7 +308,7 @@ export const RevealView: React.FC<RevealViewProps> = ({ state, sendMessage }) =>
             );
           })}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

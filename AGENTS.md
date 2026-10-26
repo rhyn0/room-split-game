@@ -9,7 +9,9 @@
   - `shared/engine.ts`: Authoritative state machine (`RoomGameEngine`) used both by the PartyKit edge server and by the in-browser Local Multi-Seat Sandbox.
 - **`party/server.ts` (PartyKit Edge Server)**:
   - Thin WebSocket adapter (`SplitTheRoomServer`) around `RoomGameEngine`. Maps connections to persistent `playerId` tokens and broadcasts per-player filtered state snapshots.
-- **`src/` (React + Vite Frontend)**:
+- **`src/` (React + Vite + Tailwind CSS + CVA Frontend)**:
+  - `src/lib/utils.ts`: `cn()` helper (`clsx` + `tailwind-merge`).
+  - `src/components/ui/`: Design system base primitives powered by **CVA (`class-variance-authority`)** (`Button`, `Card`, `Badge`, `Input`, `Textarea`, `Select`, `choiceCardVariants`). Always reuse or extend these CVA primitives instead of writing raw CSS classes.
   - `src/hooks/useRoomConnection.ts`: Manages `PartySocket` connection, per-tab `sessionStorage` player identity, and Local Sandbox fallback.
   - `src/components/`: Phase-specific UI views (`LobbyView`, `JudgePromptView`, `LockInView`, `PersuasionBoard`, `RevealView`, `PostGameView`, `RoleCardBanner`).
 - **`tests/` (Vitest Suite)**:

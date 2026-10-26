@@ -23,6 +23,8 @@ import type {
   RoleId,
   VoteRevealMode,
 } from '../../shared/types';
+import { cn } from '../lib/utils';
+import { Badge, Button, Card } from './ui';
 
 interface LobbyViewProps {
   state: ClientRoomState;
@@ -75,122 +77,131 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   };
 
   return (
-    <div className="lobby-grid">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       {/* Left Column: Room Code & Players */}
-      <div className="lobby-column">
-        <div className="card room-code-card">
-          <div className="room-code-header">
-            <span className="section-eyebrow">ROOM CODE</span>
-            <div className="room-code-display" data-testid="room-code-display">
-              {state.roomCode}
-            </div>
-            <p className="room-code-sub">
-              Share this 4-letter code or invite link with friends on Discord or mobile
-            </p>
+      <div className="lg:col-span-5 flex flex-col gap-6">
+        <Card variant="elevated" className="text-center">
+          <span className="text-xs font-extrabold tracking-widest uppercase text-indigo-300">
+            ROOM CODE
+          </span>
+          <div
+            className="font-display text-5xl font-extrabold tracking-[0.22em] text-white my-2"
+            data-testid="room-code-display"
+          >
+            {state.roomCode}
           </div>
-          <div className="room-code-actions">
-            <button type="button" className="btn-secondary" onClick={handleCopyCode}>
+          <p className="text-xs text-slate-400 mb-5">
+            Share this 4-letter code or invite link with friends on Discord or mobile
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button variant="secondary" size="md" onClick={handleCopyCode}>
               {copiedCode ? <Check size={16} /> : <Copy size={16} />}
               {copiedCode ? 'Copied Code' : 'Copy Code'}
-            </button>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={handleCopyInviteLink}
-            >
+            </Button>
+            <Button variant="secondary" size="md" onClick={handleCopyInviteLink}>
               {copiedLink ? <Check size={16} /> : <Share2 size={16} />}
               {copiedLink ? 'Copied Link' : 'Copy Invite Link'}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
-        <div className="card">
-          <div className="card-header-row">
+        <Card>
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
             <div>
-              <h2 className="card-title">
-                <Users size={18} /> Active Players ({activePlayers.length}/10)
+              <h2 className="font-display text-lg font-bold flex items-center gap-2">
+                <Users size={18} className="text-indigo-400" /> Active Players (
+                {activePlayers.length}/10)
               </h2>
-              <p className="card-subtitle">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Requires at least 3 active players (1 Judge + 2+ Voters)
               </p>
             </div>
             {isHost && activePlayers.length < 10 && (
-              <button
-                type="button"
-                className="btn-secondary btn-sm"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => sendMessage({ type: 'ADD_BOT' })}
                 data-testid="add-bot-btn"
               >
                 <Bot size={15} /> <Plus size={14} /> Add AI Bot
-              </button>
+              </Button>
             )}
           </div>
 
-          <div className="player-roster">
+          <div className="flex flex-col gap-2">
             {activePlayers.map((p) => (
               <div
                 key={p.id}
-                className={`player-chip ${p.id === state.myPlayerId ? 'player-chip-me' : ''}`}
+                className={cn(
+                  'flex items-center justify-between px-3.5 py-2.5 rounded-xl border bg-slate-950/65',
+                  p.id === state.myPlayerId
+                    ? 'border-indigo-500/60 bg-indigo-500/10'
+                    : 'border-slate-800/80'
+                )}
               >
-                <div className="player-chip-left">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <span
-                    className="avatar-dot"
+                    className="w-8 h-8 rounded-full inline-flex items-center justify-center font-extrabold text-sm text-white shrink-0"
                     style={{ backgroundColor: p.avatarColor }}
                   >
                     {p.name.charAt(0).toUpperCase()}
                   </span>
-                  <span className="player-chip-name">
+                  <span className="font-semibold text-sm">
                     {p.name}
-                    {p.id === state.myPlayerId && <span className="you-tag">YOU</span>}
+                    {p.id === state.myPlayerId && (
+                      <Badge variant="default" className="ml-2">
+                        YOU
+                      </Badge>
+                    )}
                   </span>
                   {p.isHost && (
-                    <span className="badge-host" title="Room Host">
-                      <Crown size={13} /> Host
-                    </span>
+                    <Badge variant="judge" title="Room Host">
+                      <Crown size={12} /> Host
+                    </Badge>
                   )}
                   {p.isBot && (
-                    <span className="badge-bot">
-                      <Bot size={13} /> AI Bot
-                    </span>
+                    <Badge variant="bot">
+                      <Bot size={12} /> AI Bot
+                    </Badge>
                   )}
                   {!p.isConnected && !p.isBot && (
-                    <span className="badge-offline">Offline</span>
+                    <Badge variant="danger">Offline</Badge>
                   )}
                 </div>
                 {isHost && p.isBot && (
-                  <button
-                    type="button"
-                    className="btn-icon-danger"
+                  <Button
+                    variant="destructive"
+                    size="icon"
                     onClick={() => sendMessage({ type: 'REMOVE_BOT', botId: p.id })}
                     title="Remove Bot"
                   >
                     <Trash2 size={15} />
-                  </button>
+                  </Button>
                 )}
               </div>
             ))}
           </div>
 
           {spectators.length > 0 && (
-            <div className="spectators-section">
-              <h4 className="spectators-heading">
+            <div className="mt-4 pt-4 border-t border-slate-800">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-2">
                 <Monitor size={14} /> Stage / Spectators ({spectators.length})
               </h4>
-              <div className="spectators-list">
+              <div className="flex flex-wrap gap-2">
                 {spectators.map((s) => (
-                  <span key={s.id} className="spectator-pill">
+                  <Badge key={s.id} variant="muted" size="md">
                     {s.name} {s.id === state.myPlayerId ? '(You)' : ''}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="lobby-footer-actions">
+          <div className="mt-5 flex flex-col gap-3">
             {me && (
-              <button
-                type="button"
-                className="btn-ghost"
+              <Button
+                variant="ghost"
+                fullWidth
                 onClick={() =>
                   sendMessage({
                     type: 'TOGGLE_SPECTATOR',
@@ -202,13 +213,14 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                 {me.isSpectator
                   ? 'Join as Active Player'
                   : 'Switch to TV / Stage Spectator Mode'}
-              </button>
+              </Button>
             )}
 
             {isHost ? (
-              <button
-                type="button"
-                className="btn-primary btn-lg"
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
                 disabled={activePlayers.length < 3}
                 onClick={() => sendMessage({ type: 'START_MATCH' })}
                 data-testid="start-match-btn"
@@ -217,28 +229,28 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                 {activePlayers.length < 3
                   ? `Need ${3 - activePlayers.length} More Player${3 - activePlayers.length === 1 ? '' : 's'} (or Add Bots)`
                   : `Start Match (${activePlayers.length * state.settings.rotationsCount} Rounds)`}
-              </button>
+              </Button>
             ) : (
-              <div className="waiting-host-note">
+              <div className="text-center p-3 rounded-xl bg-slate-950/50 text-slate-400 text-xs">
                 Waiting for the Host to configure settings and start the match...
               </div>
             )}
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Right Column: Match Settings & Role Deck */}
-      <div className="lobby-column">
-        <div className="card">
-          <h2 className="card-title">
-            <Settings size={18} /> Match Rules & Settings
+      <div className="lg:col-span-7 flex flex-col gap-6">
+        <Card>
+          <h2 className="font-display text-lg font-bold flex items-center gap-2 mb-4">
+            <Settings size={18} className="text-indigo-400" /> Match Rules & Settings
           </h2>
 
-          <div className="settings-group">
-            <label className="setting-label">
+          <div className="mb-5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
               End-of-Round Vote & Info Reveal Mode
-            </label>
-            <div className="segmented-options">
+            </span>
+            <div className="flex flex-col gap-2">
               {(
                 [
                   {
@@ -257,36 +269,48 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                     desc: 'Only split counts (A vs B) shown! Roles, votes & scores hidden until game end.',
                   },
                 ] as { value: VoteRevealMode; title: string; desc: string }[]
-              ).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  disabled={!isHost}
-                  className={`mode-card ${state.settings.voteRevealMode === opt.value ? 'mode-card-selected' : ''}`}
-                  onClick={() =>
-                    sendMessage({
-                      type: 'UPDATE_SETTINGS',
-                      settings: { voteRevealMode: opt.value },
-                    })
-                  }
-                >
-                  <div className="mode-card-title">{opt.title}</div>
-                  <div className="mode-card-desc">{opt.desc}</div>
-                </button>
-              ))}
+              ).map((opt) => {
+                const selected = state.settings.voteRevealMode === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    disabled={!isHost}
+                    onClick={() =>
+                      sendMessage({
+                        type: 'UPDATE_SETTINGS',
+                        settings: { voteRevealMode: opt.value },
+                      })
+                    }
+                    className={cn(
+                      'text-left p-3.5 rounded-xl border transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed',
+                      selected
+                        ? 'border-indigo-500 bg-indigo-500/15'
+                        : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
+                    )}
+                  >
+                    <div className="font-bold text-sm text-white">{opt.title}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{opt.desc}</div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="settings-row-split">
-            <div className="settings-group">
-              <label className="setting-label">Judge Rotations</label>
-              <div className="pill-selector">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                Judge Rotations
+              </span>
+              <div className="flex flex-wrap gap-2">
                 {[1, 2, 3].map((rot) => (
-                  <button
+                  <Button
                     key={rot}
-                    type="button"
+                    variant={
+                      state.settings.rotationsCount === rot ? 'primary' : 'secondary'
+                    }
+                    size="sm"
                     disabled={!isHost}
-                    className={`pill-btn ${state.settings.rotationsCount === rot ? 'pill-btn-active' : ''}`}
                     onClick={() =>
                       sendMessage({
                         type: 'UPDATE_SETTINGS',
@@ -295,25 +319,31 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                     }
                   >
                     {rot}x ({activePlayers.length * rot} Rds)
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
 
-            <div className="settings-group">
-              <label className="setting-label">Phase Timer</label>
-              <div className="pill-selector">
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                Phase Timer
+              </span>
+              <div className="flex flex-wrap gap-2">
                 {[
                   { label: 'Untimed', sec: 0 },
                   { label: '60s', sec: 60 },
                   { label: '90s', sec: 90 },
                   { label: '120s', sec: 120 },
                 ].map((t) => (
-                  <button
+                  <Button
                     key={t.sec}
-                    type="button"
+                    variant={
+                      state.settings.phaseTimerSeconds === t.sec
+                        ? 'primary'
+                        : 'secondary'
+                    }
+                    size="sm"
                     disabled={!isHost}
-                    className={`pill-btn ${state.settings.phaseTimerSeconds === t.sec ? 'pill-btn-active' : ''}`}
                     onClick={() =>
                       sendMessage({
                         type: 'UPDATE_SETTINGS',
@@ -322,27 +352,25 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                     }
                   >
                     {t.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="card">
-          <div className="card-header-row">
-            <div>
-              <h2 className="card-title">
-                <Shield size={18} /> Secret Role Deck (
-                {state.settings.enabledRoles.length}/{ALL_ROLE_IDS.length} Active)
-              </h2>
-              <p className="card-subtitle">
-                Every non-Judge voter is dealt 1 fresh secret Role Card each round
-              </p>
-            </div>
+        <Card>
+          <div className="mb-4">
+            <h2 className="font-display text-lg font-bold flex items-center gap-2">
+              <Shield size={18} className="text-indigo-400" /> Secret Role Deck (
+              {state.settings.enabledRoles.length}/{ALL_ROLE_IDS.length} Active)
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Every non-Judge voter is dealt 1 fresh secret Role Card each round
+            </p>
           </div>
 
-          <div className="roles-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
             {ALL_ROLE_IDS.map((roleId) => {
               const role = ROLES_CATALOG[roleId];
               const enabled = state.settings.enabledRoles.includes(roleId);
@@ -351,31 +379,40 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                   key={roleId}
                   type="button"
                   disabled={!isHost}
-                  className={`role-deck-item ${enabled ? 'role-deck-item-on' : 'role-deck-item-off'}`}
                   onClick={() => toggleRoleEnabled(roleId)}
+                  className={cn(
+                    'text-left p-3 rounded-xl border transition-all cursor-pointer disabled:cursor-default',
+                    enabled
+                      ? 'border-indigo-500/50 bg-indigo-500/10 text-slate-100'
+                      : 'border-slate-800/70 bg-slate-950/50 text-slate-500 opacity-50'
+                  )}
                 >
-                  <div className="role-deck-top">
-                    <span className="role-deck-name">{role.name}</span>
-                    <span
-                      className={`role-deck-tag ${role.category === 'active' ? 'tag-active' : 'tag-passive'}`}
+                  <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                    <span className="font-bold text-xs text-white">{role.name}</span>
+                    <Badge
+                      variant={
+                        role.category === 'active' ? 'activePower' : 'passiveRole'
+                      }
                     >
                       {role.category === 'active' ? (
                         <>
-                          <Zap size={11} /> Power
+                          <Zap size={10} /> Power
                         </>
                       ) : (
                         <>
-                          <Sparkles size={11} /> Objective
+                          <Sparkles size={10} /> Goal
                         </>
                       )}
-                    </span>
+                    </Badge>
                   </div>
-                  <p className="role-deck-desc">{role.objectiveDescription}</p>
+                  <p className="text-[11px] text-slate-400 leading-snug">
+                    {role.objectiveDescription}
+                  </p>
                 </button>
               );
             })}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

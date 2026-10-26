@@ -20,7 +20,9 @@ import { LockInView } from './components/LockInView';
 import { PersuasionBoard } from './components/PersuasionBoard';
 import { PostGameView } from './components/PostGameView';
 import { RevealView } from './components/RevealView';
+import { Badge, Button, Card, Input } from './components/ui';
 import { useRoomConnection } from './hooks/useRoomConnection';
+import { cn } from './lib/utils';
 
 function generateRoomCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -95,14 +97,20 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="app-shell">
+    <div className="min-h-screen flex flex-col">
       {/* Toast Notifications */}
-      <div className="toast-stack">
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`toast-item toast-${t.variant}`}
             onClick={() => dismissToast(t.id)}
+            className={cn(
+              'px-4 py-3 rounded-xl text-xs font-semibold shadow-2xl cursor-pointer border text-white',
+              t.variant === 'success' && 'bg-emerald-950/95 border-emerald-500',
+              t.variant === 'warning' && 'bg-amber-950/95 border-amber-500',
+              t.variant === 'error' && 'bg-rose-950/95 border-rose-500',
+              t.variant === 'info' && 'bg-slate-900/95 border-slate-700'
+            )}
           >
             <span>{t.message}</span>
           </div>
@@ -110,98 +118,99 @@ export const App: React.FC = () => {
       </div>
 
       {/* Top Navigation / Status Header */}
-      <header className="top-navbar">
-        <div className="brand-group">
-          <div className="brand-logo-icon">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-3.5 border-b border-slate-800/80 bg-[#090b12]/80 backdrop-blur-md sticky top-0 z-40">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
             <Scale size={20} />
           </div>
           <div>
-            <span className="brand-title">SPLIT THE ROOM</span>
-            <span className="brand-subtitle">Social Deduction & Persuasion</span>
+            <span className="block font-display font-extrabold text-base tracking-wider">
+              SPLIT THE ROOM
+            </span>
+            <span className="block text-[11px] text-slate-400">
+              Social Deduction & Persuasion
+            </span>
           </div>
         </div>
 
         {roomState && (
-          <div className="navbar-room-meta">
-            <div className="room-pill">
-              <span className="room-pill-label">ROOM</span>
-              <strong>{roomState.roomCode}</strong>
-            </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Badge variant="muted" size="md">
+              <span className="text-slate-400 font-normal">ROOM</span>
+              <strong className="text-white">{roomState.roomCode}</strong>
+            </Badge>
 
             {roomState.phase !== 'LOBBY' && (
-              <div className="round-pill" data-testid="round-counter-pill">
+              <Badge variant="default" size="md" data-testid="round-counter-pill">
                 Round {roomState.currentRound} / {roomState.totalRounds}
-              </div>
+              </Badge>
             )}
 
             {secondsLeft !== null && (
-              <div
-                className={`timer-pill ${secondsLeft <= 10 ? 'timer-pill-urgent' : ''}`}
-              >
-                <Clock size={15} /> {secondsLeft}s
-              </div>
+              <Badge variant={secondsLeft <= 10 ? 'danger' : 'muted'} size="md">
+                <Clock size={14} /> {secondsLeft}s
+              </Badge>
             )}
 
-            <div className="conn-indicator">
+            <div className="text-xs font-medium px-1">
               {connectionStatus === 'connected' ? (
-                <span className="conn-ok">
+                <span className="inline-flex items-center gap-1.5 text-emerald-400">
                   <Wifi size={14} /> {isSandboxMode ? 'Local Sandbox' : 'Live Edge'}
                 </span>
               ) : (
-                <span className="conn-warn">
+                <span className="inline-flex items-center gap-1.5 text-amber-400">
                   <WifiOff size={14} /> {connectionStatus}
                 </span>
               )}
             </div>
 
-            <button
-              type="button"
-              className="btn-ghost btn-sm"
-              onClick={leaveRoom}
-              title="Leave Room"
-            >
+            <Button variant="ghost" size="sm" onClick={leaveRoom} title="Leave Room">
               <LogOut size={15} /> Leave
-            </button>
+            </Button>
           </div>
         )}
       </header>
 
       {/* Sandbox Multi-Seat Switcher Bar (when in Local Sandbox Mode) */}
       {isSandboxMode && roomState && (
-        <div className="sandbox-switcher-bar" data-testid="sandbox-bar">
-          <div className="sandbox-bar-left">
-            <span className="sandbox-badge">MULTI-SEAT SANDBOX</span>
-            <span className="sandbox-hint">
+        <div
+          className="bg-indigo-500/15 border-b border-indigo-500/35 px-6 py-2.5 flex flex-wrap items-center justify-between gap-3"
+          data-testid="sandbox-bar"
+        >
+          <div className="flex items-center gap-2.5 text-xs">
+            <Badge variant="default">MULTI-SEAT SANDBOX</Badge>
+            <span className="text-slate-300">
               Switch active player perspective to test secret roles & votes:
             </span>
           </div>
-          <div className="sandbox-seats">
+          <div className="flex flex-wrap items-center gap-2">
             {roomState.players
               .filter((p) => !p.isBot)
               .map((p) => (
-                <button
+                <Button
                   key={p.id}
-                  type="button"
-                  className={`seat-btn ${p.id === playerId ? 'seat-btn-active' : ''}`}
+                  variant={p.id === playerId ? 'primary' : 'secondary'}
+                  size="xs"
                   onClick={() => switchSandboxPerspective(p.id)}
                   data-testid={`switch-seat-${p.name}`}
                 >
                   {p.name}
                   {p.id === roomState.judgeId ? ' (Judge)' : ''}
-                </button>
+                </Button>
               ))}
             {roomState.phase === 'LOBBY' && (
-              <button
-                type="button"
-                className="seat-btn seat-btn-add"
+              <Button
+                variant="ghost"
+                size="xs"
+                className="border-dashed border-indigo-400/50 text-indigo-300"
                 onClick={() => {
                   const humanCount = roomState.players.filter((p) => !p.isBot).length;
                   addSandboxHumanSeat(`Player ${humanCount + 1}`);
                 }}
                 data-testid="add-sandbox-seat-btn"
               >
-                <UserPlus size={14} /> + Add Human Seat
-              </button>
+                <UserPlus size={13} /> + Add Human Seat
+              </Button>
             )}
           </div>
         </div>
@@ -211,7 +220,7 @@ export const App: React.FC = () => {
       {roomState &&
         roomState.phase !== 'LOBBY' &&
         roomState.phase !== 'POST_GAME_SUMMARY' && (
-          <div className="scoreboard-ribbon">
+          <div className="flex items-center gap-2 px-6 py-2.5 bg-slate-950/75 border-b border-slate-800/80 overflow-x-auto">
             {roomState.players
               .filter((p) => !p.isSpectator)
               .map((p) => {
@@ -220,21 +229,31 @@ export const App: React.FC = () => {
                 return (
                   <div
                     key={p.id}
-                    className={`ribbon-player ${isJudge ? 'ribbon-player-judge' : ''} ${isMe ? 'ribbon-player-me' : ''}`}
+                    className={cn(
+                      'inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs whitespace-nowrap bg-slate-900/70',
+                      isJudge
+                        ? 'border-amber-500/55 bg-amber-500/10'
+                        : isMe
+                          ? 'border-indigo-500/55'
+                          : 'border-slate-800'
+                    )}
                   >
                     <span
-                      className="avatar-dot avatar-xs"
+                      className="w-5 h-5 rounded-full inline-flex items-center justify-center font-extrabold text-[10px] text-white"
                       style={{ backgroundColor: p.avatarColor }}
                     >
                       {p.name.charAt(0).toUpperCase()}
                     </span>
-                    <span className="ribbon-name">{p.name}</span>
+                    <span className="font-semibold">{p.name}</span>
                     {isJudge && (
-                      <span className="ribbon-judge-icon" title="Current Judge">
-                        <Gavel size={13} />
+                      <span
+                        className="text-amber-400 inline-flex"
+                        title="Current Judge"
+                      >
+                        <Gavel size={12} />
                       </span>
                     )}
-                    <span className="ribbon-score">
+                    <span className="text-slate-400 font-bold text-[11px]">
                       {roomState.settings.voteRevealMode === 'fog_of_war'
                         ? '? pts'
                         : `${p.score} pts`}
@@ -246,45 +265,49 @@ export const App: React.FC = () => {
         )}
 
       {/* Main Content Area */}
-      <main className="main-container">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-5 pt-6 pb-14">
         {!roomState ? (
-          <div className="landing-wrapper">
-            <div className="landing-hero">
-              <span className="hero-pill">
-                <Sparkles size={14} /> ONLINE SOCIAL DEDUCTION & PERSUASION
-              </span>
-              <h1 className="hero-title">
+          <div className="flex flex-col gap-8">
+            <div className="text-center max-w-2xl mx-auto mt-2">
+              <Badge variant="default" size="md" className="mb-3">
+                <Sparkles size={13} /> ONLINE SOCIAL DEDUCTION & PERSUASION
+              </Badge>
+              <h1 className="font-display text-4xl sm:text-5xl font-extrabold leading-tight mb-3">
                 Ask One Question.
                 <br />
-                <span className="hero-gradient-text">Split the Room.</span>
+                <span className="bg-gradient-to-r from-sky-400 via-indigo-400 to-rose-400 bg-clip-text text-transparent">
+                  Split the Room.
+                </span>
               </h1>
-              <p className="hero-lead">
-                Each round, the <strong>Judge</strong> writes a free-form 2-choice
-                dilemma to divide the group and hunt for the{' '}
-                <strong>smallest non-zero minority</strong>. Everyone else locks in
-                secretly, receives a hidden <strong>Role Card</strong>, and bluffs on
-                the persuasion board to bait the Judge!
+              <p className="text-slate-400 text-sm sm:text-base">
+                Each round, the <strong className="text-slate-200">Judge</strong> writes
+                a free-form 2-choice dilemma to divide the group and hunt for the{' '}
+                <strong className="text-slate-200">smallest non-zero minority</strong>.
+                Everyone else locks in secretly, receives a hidden{' '}
+                <strong className="text-slate-200">Role Card</strong>, and bluffs on the
+                persuasion board to bait the Judge!
               </p>
             </div>
 
-            <div className="landing-cards-grid">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Create or Join Live Multiplayer Room */}
-              <div className="card auth-card">
-                <h2 className="card-title">
-                  <Users size={19} /> Play Live with Friends
+              <Card className="lg:col-span-6">
+                <h2 className="font-display text-lg font-bold flex items-center gap-2">
+                  <Users size={19} className="text-indigo-400" /> Play Live with Friends
                 </h2>
-                <p className="card-subtitle">
+                <p className="text-xs text-slate-400 mt-0.5 mb-4">
                   Powered by PartyKit real-time edge rooms — zero sign-up required
                 </p>
 
-                <div className="form-field">
-                  <label htmlFor="player-name-input" className="field-label">
+                <div className="flex flex-col gap-1.5 mb-4">
+                  <label
+                    htmlFor="player-name-input"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-300"
+                  >
                     Your Display Name
                   </label>
-                  <input
+                  <Input
                     id="player-name-input"
-                    type="text"
-                    className="text-input"
                     maxLength={20}
                     placeholder="e.g. Alex"
                     value={nameInput}
@@ -293,39 +316,45 @@ export const App: React.FC = () => {
                   />
                 </div>
 
-                <div className="landing-actions-stack">
-                  <button
-                    type="button"
-                    className="btn-primary btn-lg btn-full"
+                <div className="flex flex-col gap-3.5">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
                     onClick={handleCreateRoom}
                     data-testid="create-room-btn"
                   >
                     <Plus size={18} /> Create New Room
-                  </button>
+                  </Button>
 
-                  <div className="divider-text">OR JOIN BY 4-LETTER CODE</div>
+                  <div className="text-center text-[11px] font-bold tracking-widest text-slate-500">
+                    OR JOIN BY 4-LETTER CODE
+                  </div>
 
-                  <form onSubmit={handleJoinExisting} className="join-row">
-                    <input
-                      type="text"
-                      className="text-input code-input"
+                  <form
+                    onSubmit={handleJoinExisting}
+                    className="grid grid-cols-[1fr_auto] gap-2.5"
+                  >
+                    <Input
+                      variant="code"
                       maxLength={6}
                       placeholder="ABCD"
                       value={joinCodeInput}
                       onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
                       data-testid="join-code-input"
                     />
-                    <button
+                    <Button
                       type="submit"
-                      className="btn-secondary btn-lg"
+                      variant="secondary"
+                      size="lg"
                       disabled={!joinCodeInput.trim()}
                       data-testid="join-room-btn"
                     >
                       Join Room
-                    </button>
+                    </Button>
                   </form>
 
-                  <label className="spectator-checkbox-row">
+                  <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={joinAsSpectator}
@@ -336,80 +365,68 @@ export const App: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="sandbox-callout">
-                  <div>
-                    <strong>Testing solo or offline?</strong>
-                    <p>
+                <div className="mt-5 p-4 rounded-xl bg-indigo-500/10 border border-dashed border-indigo-500/35 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="max-w-xs">
+                    <strong className="text-white">Testing solo or offline?</strong>
+                    <p className="text-slate-400 mt-0.5">
                       Launch a multi-seat sandbox right in your browser to test roles,
                       bots, and multiple player views side-by-side.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    className="btn-ghost btn-sm"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleStartSandbox}
                     data-testid="start-sandbox-btn"
                   >
                     Launch Local Sandbox
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
 
               {/* How It Works Guide */}
-              <div className="card rules-preview-card">
-                <h2 className="card-title">
-                  <Trophy size={19} /> How Scoring & Deduction Work
+              <Card className="lg:col-span-6">
+                <h2 className="font-display text-lg font-bold flex items-center gap-2 mb-4">
+                  <Trophy size={19} className="text-amber-400" /> How Scoring &
+                  Deduction Work
                 </h2>
-                <div className="rules-steps">
-                  <div className="rule-step">
-                    <div className="rule-num">1</div>
-                    <div>
-                      <h4>The Judge Writes a 2-Choice Dilemma</h4>
-                      <p>
-                        Strictly free-form: ask a philosophical question, hot take, or
-                        trap designed to divide your friends into Option A vs. Option B.
-                      </p>
+                <div className="flex flex-col gap-4">
+                  {[
+                    {
+                      num: 1,
+                      title: 'The Judge Writes a 2-Choice Dilemma',
+                      desc: 'Strictly free-form: ask a philosophical question, hot take, or trap designed to divide your friends into Option A vs. Option B.',
+                    },
+                    {
+                      num: 2,
+                      title: 'Secret Lock-In & Hidden Role Cards',
+                      desc: 'All N voters secretly lock in A or B and receive a secret Role Card (like The Baiter, The Lone Wolf, The Forger, or The Saboteur).',
+                    },
+                    {
+                      num: 3,
+                      title: 'Persuasion & Active Powers',
+                      desc: 'Post pitch cards on the board (or bluff over Discord!). Trigger active powers to wiretap a vote, forge a card under a friend’s name, or secretly nudge someone’s choice!',
+                    },
+                    {
+                      num: 4,
+                      title: 'The Non-Zero Minority Verdict',
+                      desc: 'The Judge picks A or B. If k players are on that side, the Judge scores (N − k) pts—but scores 0 pts if baited into an empty side (k = 0) or unanimous side (k = N)! Voters on the Judge’s side earn +2 base pts + Role Bonuses!',
+                    },
+                  ].map((step) => (
+                    <div key={step.num} className="flex gap-3.5 items-start">
+                      <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 font-extrabold text-xs flex items-center justify-center shrink-0">
+                        {step.num}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-white mb-0.5">
+                          {step.title}
+                        </h4>
+                        <p className="text-xs text-slate-400">{step.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="rule-step">
-                    <div className="rule-num">2</div>
-                    <div>
-                      <h4>Secret Lock-In & Hidden Role Cards</h4>
-                      <p>
-                        All <strong>N</strong> voters secretly lock in A or B and
-                        receive a secret Role Card (like <em>The Baiter</em>,{' '}
-                        <em>The Lone Wolf</em>, <em>The Forger</em>, or{' '}
-                        <em>The Saboteur</em>).
-                      </p>
-                    </div>
-                  </div>
-                  <div className="rule-step">
-                    <div className="rule-num">3</div>
-                    <div>
-                      <h4>Persuasion & Active Powers</h4>
-                      <p>
-                        Post pitch cards on the board (or bluff over Discord!). Trigger
-                        active powers to wiretap a vote, forge a card under a friend’s
-                        name, or secretly nudge someone’s choice!
-                      </p>
-                    </div>
-                  </div>
-                  <div className="rule-step">
-                    <div className="rule-num">4</div>
-                    <div>
-                      <h4>The Non-Zero Minority Verdict</h4>
-                      <p>
-                        The Judge picks A or B. If <strong>k</strong> players are on
-                        that side, the Judge scores <strong>(N − k) pts</strong>—but
-                        scores <strong>0 pts</strong> if baited into an empty side (
-                        <strong>k = 0</strong>) or unanimous side (
-                        <strong>k = N</strong>)! Voters on the Judge’s side earn{' '}
-                        <strong>+2 base pts</strong> + Role Bonuses!
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         ) : (

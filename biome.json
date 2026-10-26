@@ -27,6 +27,9 @@
     "enabled": true,
     "rules": {
       "preset": "recommended",
+      "suspicious": {
+        "noUnknownAtRules": "off"
+      },
       "a11y": {
         "useKeyWithClickEvents": "off",
         "noStaticElementInteractions": "off",
@@ -40,6 +43,11 @@
       "jsxQuoteStyle": "double",
       "trailingCommas": "es5",
       "semicolons": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }
